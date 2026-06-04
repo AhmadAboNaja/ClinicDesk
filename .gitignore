@@ -1,4 +1,5 @@
 config/database.php
 public/uploads/*
+!public/uploads/.gitkeep
 vendor/
 .env
