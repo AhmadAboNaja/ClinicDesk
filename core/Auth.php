@@ -1,40 +1,56 @@
 <?php
 
 class Auth {
-    public static function login($user) {
-        $_SESSION['user_id'] = $user['id'];
-        $_SESSION['user_role'] = $user['role'];
-        $_SESSION['user_name'] = $user['name'];
+    public static function login(array $user): void {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
+        $_SESSION['user'] = [
+            'id' => (int) $user['id'],
+            'name' => $user['name'],
+            'role' => $user['role'],
+            'first_login' => isset($user['first_login']) ? (int) $user['first_login'] : 0,
+        ];
+
         session_regenerate_id(true);
     }
 
-    public static function logout() {
-        session_start();
-        session_unset();
+    public static function logout(): void {
+        if (session_status() !== PHP_SESSION_ACTIVE) {
+            session_start();
+        }
+
+        $_SESSION = [];
+        if (ini_get('session.use_cookies')) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
+        }
+
         session_destroy();
     }
 
-    public static function check() {
-        return isset($_SESSION['user_id']);
+    public static function check(): bool {
+        return isset($_SESSION['user']);
     }
 
-    public static function user() {
-        if (!self::check()) return null;
-        $userModel = new User();
-        return $userModel->find($_SESSION['user_id']);
+    public static function currentUser(): ?array {
+        return self::check() ? $_SESSION['user'] : null;
     }
 
-    public static function requireRole($role) {
-        if (!self::check() || $_SESSION['user_role'] !== $role) {
-            header('Location: login.php');
-            exit();
+    public static function role(): string {
+        return self::check() ? $_SESSION['user']['role'] : '';
+    }
+
+    public static function requireRole(string ...$roles): void {
+        if (!self::check()) {
+            header('Location: index.php?page=login');
+            exit;
         }
-    }
 
-    public static function guest() {
-        if (self::check()) {
-            header('Location: index.php?page=dashboard');
-            exit();
+        if ($roles && !in_array(self::role(), $roles, true)) {
+            header('Location: index.php?page=error&code=403');
+            exit;
         }
     }
 }

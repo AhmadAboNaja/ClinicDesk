@@ -1,0 +1,32 @@
+body{font-family:Arial,Helvetica,sans-serif;background:#f4f6f9;color:#343a40;margin:0;padding:0;}
+.wrapper{min-height:100vh;display:flex;flex-direction:column;}
+.main-header,.main-footer{background:#343a40;color:#fff;padding:0.75rem 1rem;}
+.main-sidebar{background:#007bff;min-width:220px;color:#fff;flex-shrink:0;}
+.content-wrapper{flex:1;padding:1rem;}
+.navbar-nav{list-style:none;margin:0;padding:0;display:flex;}
+.navbar-nav .nav-item{margin-left:1rem;}
+.navbar-nav .nav-link{color:#fff;text-decoration:none;}
+.nav-link:hover{color:#d4d9df;}
+.brand-link{display:block;padding:1rem;color:#fff;text-decoration:none;font-weight:bold;}
+.sidebar .nav-link{color:#fff;display:block;padding:0.75rem 1rem;text-decoration:none;}
+.sidebar .nav-link.active, .sidebar .nav-link:hover{background:rgba(255,255,255,.1);}
+.card{background:#fff;border:1px solid #dee2e6;border-radius:0.25rem;margin-bottom:1rem;box-shadow:0 0.125rem 0.25rem rgba(0,0,0,.075);}
+.card-header{padding:0.75rem 1rem;background:#f7f7f7;border-bottom:1px solid #dee2e6;}
+.card-body{padding:1rem;}
+.card-footer{padding:0.75rem 1rem;background:#f7f7f7;border-top:1px solid #dee2e6;text-align:right;}
+.table{width:100%;max-width:100%;margin-bottom:1rem;border-collapse:collapse;}
+.table th,.table td{padding:0.75rem;border:1px solid #dee2e6;}
+.form-group{margin-bottom:1rem;}
+.form-control{width:100%;padding:0.5rem 0.75rem;border:1px solid #ced4da;border-radius:0.25rem;}
+.btn{display:inline-block;font-weight:400;color:#fff;text-align:center;vertical-align:middle;user-select:none;background-color:#007bff;border:1px solid #007bff;padding:0.5rem 1rem;border-radius:0.25rem;text-decoration:none;cursor:pointer;}
+.btn-primary{background-color:#007bff;border-color:#007bff;}
+.alert{padding:0.75rem 1rem;margin-bottom:1rem;border:1px solid transparent;border-radius:0.25rem;}
+.alert-success{color:#0f5132;background-color:#d1e7dd;border-color:#badbcc;}
+.alert-danger{color:#842029;background-color:#f8d7da;border-color:#f5c2c7;}
+.alert-warning{color:#664d03;background-color:#fff3cd;border-color:#ffecb5;}
+.breadcrumb{padding:0.5rem 1rem;margin-bottom:1rem;background:#e9ecef;border-radius:0.25rem;}
+.badge{display:inline-block;padding:.35em .65em;font-size:75%;font-weight:700;line-height:1;color:#fff;text-align:center;white-space:nowrap;border-radius:.25rem;}
+.badge-success{background-color:#28a745;}
+.badge-info{background-color:#17a2b8;}
+.badge-warning{background-color:#ffc107;color:#212529;}
+.badge-danger{background-color:#dc3545;}
