@@ -1,0 +1,7 @@
+<?php
+return [
+    'host' => 'localhost',
+    'dbname' => 'clinic_desk',
+    'user' => 'root',
+    'pass' => '',
+];
