@@ -1,48 +1,69 @@
 <?php
 
-require_once __DIR__ . '/../models/User.php';
-require_once __DIR__ . '/../models/Doctor.php';
+require_once __DIR__ . '/../core/Auth.php';
 require_once __DIR__ . '/../core/CSRF.php';
+require_once __DIR__ . '/../models/Specialization.php';
 
-class AdminController {
-    private $userModel;
-    private $doctorModel;
+class SpecializationController {
+    private Specialization $specializationModel;
 
     public function __construct() {
-        $this->userModel = new User();
-        $this->doctorModel = new Doctor();
+        $this->specializationModel = new Specialization();
     }
 
-    public function createUser() {
+    public function index(): void {
+        Auth::requireRole('admin');
+        $specializations = $this->specializationModel->getAll();
+
+        $pageTitle = 'Specializations';
+        require __DIR__ . '/../views/partials/header.php';
+        require __DIR__ . '/../views/doctors/specializations.php';
+        require __DIR__ . '/../views/layouts/footer.php';
+    }
+
+    public function create(): void {
+        Auth::requireRole('admin');
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            CSRF::validateToken($_POST['csrf_token']);
-
-            $userData = [
-                'name' => $_POST['name'],
-                'email' => $_POST['email'],
-                'password' => password_hash($_POST['temp_password'], PASSWORD_BCRYPT),
-                'role' => $_POST['role'],
-                'phone' => $_POST['phone'],
-                'is_active' => 1,
-                'first_login' => 1
-            ];
-
-            $userId = $this->userModel->create($userData);
-
-            if ($userData['role'] === 'doctor') {
-                $doctorData = [
-                    'user_id' => $userId,
-                    'specialization_id' => $_POST['specialization_id'],
-                    'consultation_fee' => $_POST['fee'],
-                    'available_days' => implode(',', $_POST['available_days'])
-                ];
-                $this->doctorModel->query("INSERT INTO doctors (user_id, specialization_id, consultation_fee, available_days) VALUES (?, ?, ?, ?)", 
-                    [$doctorData['user_id'], $doctorData['specialization_id'], $doctorData['consultation_fee'], $doctorData['available_days']]);
+            $token = $_POST['csrf_token'] ?? '';
+            if (!CSRF::validateToken($token)) {
+                flash('error', 'Invalid CSRF token.');
+                redirect('index.php?page=specializations');
             }
 
-            $_SESSION['success'] = "User created successfully!";
-            header('Location: index.php?page=manage_users');
-            exit();
+            $name = trim($_POST['name'] ?? '');
+            if (!$name) {
+                flash('error', 'Name is required.');
+                redirect('index.php?page=specializations');
+            }
+
+            $this->specializationModel->create($name);
+            flash('success', 'Specialization created.');
+            redirect('index.php?page=specializations');
         }
+
+        $pageTitle = 'Add Specialization';
+        require __DIR__ . '/../views/partials/header.php';
+        require __DIR__ . '/../views/doctors/specialization_form.php';
+        require __DIR__ . '/../views/layouts/footer.php';
+    }
+
+    public function delete(): void {
+        Auth::requireRole('admin');
+        $id = (int) ($_GET['id'] ?? 0);
+        $token = $_POST['csrf_token'] ?? '';
+
+        if (!CSRF::validateToken($token)) {
+            flash('error', 'Invalid CSRF token.');
+            redirect('index.php?page=specializations');
+        }
+
+        if (!$this->specializationModel->isSafeToDelete($id)) {
+            flash('error', 'Cannot delete specialization with associated doctors.');
+            redirect('index.php?page=specializations');
+        }
+
+        $this->specializationModel->delete($id);
+        flash('success', 'Specialization deleted.');
+        redirect('index.php?page=specializations');
     }
 }
