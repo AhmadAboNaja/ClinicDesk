@@ -41,7 +41,7 @@ class Prescription extends BaseModel {
         $sql = 'SELECT p.*, a.appt_date, d.name as doctor_name
                 FROM prescriptions p
                 JOIN appointments a ON p.appointment_id = a.id
-                JOIN doctors doc ON a.doctor_id = doc.id
+                JOIN doctors doc ON a.doctor_id = doc.user_id
                 JOIN users d ON doc.user_id = d.id
                 WHERE a.patient_id = ? AND a.status = "completed"
                 ORDER BY a.appt_date DESC';
