@@ -104,7 +104,7 @@ Point your web server to `public/` folder. With Apache and `.htaccess` enabled, 
 ### 4. Default Login
 
 - Email: `admin@clinicdesk.com`
-- Password: `admin123` (update after first login)
+- Password: `password` (update after first login)
 
 ## Database Schema Highlights
 

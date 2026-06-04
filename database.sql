@@ -62,6 +62,6 @@ CREATE TABLE IF NOT EXISTS prescriptions (
 -- Seed Initial Data
 INSERT INTO specializations (name) VALUES ('General Practice'), ('Cardiology'), ('Pediatrics'), ('Dermatology');
 
--- Initial Admin (password: admin123)
+-- Initial Admin (password: password)
 INSERT INTO users (name, email, password, role, is_active, first_login) 
 VALUES ('System Admin', 'admin@clinicdesk.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 1, 0);

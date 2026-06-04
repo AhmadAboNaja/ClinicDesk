@@ -341,7 +341,7 @@ Each commit represents a logical feature boundary:
 
 4. **First Login**
    - Email: `admin@clinicdesk.com`
-   - Password: `admin123`
+   - Password: `password`
    - Update in User Management after login
 
 5. **Production Hardening**
