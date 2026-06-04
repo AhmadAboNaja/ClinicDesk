@@ -117,25 +117,24 @@ switch ($page) {
 
     case 'specializations':
         Auth::requireRole('admin');
-        require_once __DIR__ . '/../controllers/AdminController.php';
-        $controller = new AdminController();
+        require_once __DIR__ . '/../controllers/SpecializationController.php';
+        $controller = new SpecializationController();
         if ($action === 'create') {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $controller->createSpecialization();
+                $controller->create();
             } else {
                 $pageTitle = 'Create Specialization';
                 require_once __DIR__ . '/../views/doctors/specialization_form.php';
             }
         } elseif ($action === 'delete') {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $controller->deleteSpecialization();
+                $controller->delete();
             } else {
                 header('Location: index.php?page=specializations');
                 exit;
             }
         } else {
-            $pageTitle = 'Specializations';
-            require_once __DIR__ . '/../views/doctors/specializations.php';
+            $controller->index();
         }
         break;
 
@@ -215,12 +214,7 @@ switch ($page) {
         Auth::requireRole('admin');
         require_once __DIR__ . '/../controllers/ReportController.php';
         $controller = new ReportController();
-        if (isset($_GET['export']) && $_GET['export'] === 'csv') {
-            $controller->exportCsv();
-        } else {
-            $pageTitle = 'Appointment Reports';
-            require_once __DIR__ . '/../views/reports/index.php';
-        }
+        $controller->index();
         break;
 
     case 'error':
