@@ -15,7 +15,11 @@ abstract class BaseModel {
 
     protected function fetchOne(string $sql, array $params = []): ?array {
         $stmt = $this->execute($sql, $params);
-        return $stmt ? $stmt->fetch(PDO::FETCH_ASSOC) : null;
+        if (!$stmt) {
+            return null;
+        }
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result !== false ? $result : null;
     }
 
     protected function fetchAll(string $sql, array $params = []): array {

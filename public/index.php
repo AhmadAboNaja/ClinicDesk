@@ -6,13 +6,13 @@ ini_set('log_errors', '1');
 
 session_start();
 
-require_once __DIR__ . '/../config/config.php';
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../core/Database.php';
-require_once __DIR__ . '/../core/Auth.php';
-require_once __DIR__ . '/../core/CSRF.php';
-require_once __DIR__ . '/../core/Paginator.php';
-require_once __DIR__ . '/../core/helpers.php';
+require_once dirname(__DIR__) . '/config/config.php';
+require_once dirname(__DIR__) . '/config/database.php';
+require_once dirname(__DIR__) . '/core/Database.php';
+require_once dirname(__DIR__) . '/core/Auth.php';
+require_once dirname(__DIR__) . '/core/CSRF.php';
+require_once dirname(__DIR__) . '/core/Paginator.php';
+require_once dirname(__DIR__) . '/core/helpers.php';
 
 $page = $_GET['page'] ?? 'login';
 $action = $_GET['action'] ?? 'index';

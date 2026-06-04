@@ -35,7 +35,7 @@ class Appointment extends BaseModel {
                        d.name as doctor_name, s.name as specialization
                 FROM appointments a
                 JOIN users u ON a.patient_id = u.id
-                JOIN doctors doc ON a.doctor_id = doc.id
+                JOIN doctors doc ON a.doctor_id = doc.user_id
                 JOIN users d ON doc.user_id = d.id
                 JOIN specializations s ON doc.specialization_id = s.id
                 WHERE a.id = ?';
@@ -68,7 +68,7 @@ class Appointment extends BaseModel {
         $whereClause = implode(' AND ', $conditions);
         $sql = "SELECT a.*, d.name as doctor_name, s.name as specialization
                 FROM appointments a
-                JOIN doctors doc ON a.doctor_id = doc.id
+                JOIN doctors doc ON a.doctor_id = doc.user_id
                 JOIN users d ON doc.user_id = d.id
                 JOIN specializations s ON doc.specialization_id = s.id
                 WHERE $whereClause
@@ -148,7 +148,7 @@ class Appointment extends BaseModel {
         $sql = "SELECT a.*, u.name as patient_name, d.name as doctor_name, s.name as specialization
                 FROM appointments a
                 JOIN users u ON a.patient_id = u.id
-                JOIN doctors doc ON a.doctor_id = doc.id
+                JOIN doctors doc ON a.doctor_id = doc.user_id
                 JOIN users d ON doc.user_id = d.id
                 JOIN specializations s ON doc.specialization_id = s.id
                 $whereClause
@@ -212,7 +212,7 @@ class Appointment extends BaseModel {
         $sql = 'SELECT a.*, u.name as patient_name, d.name as doctor_name, s.name as specialization
                 FROM appointments a
                 JOIN users u ON a.patient_id = u.id
-                JOIN doctors doc ON a.doctor_id = doc.id
+                JOIN doctors doc ON a.doctor_id = doc.user_id
                 JOIN users d ON doc.user_id = d.id
                 JOIN specializations s ON doc.specialization_id = s.id
                 ORDER BY a.created_at DESC
@@ -270,7 +270,7 @@ class Appointment extends BaseModel {
     public function getPatientNextAppointment(int $patientId): ?array {
         $sql = 'SELECT a.*, d.name as doctor_name, s.name as specialization
                 FROM appointments a
-                JOIN doctors doc ON a.doctor_id = doc.id
+                JOIN doctors doc ON a.doctor_id = doc.user_id
                 JOIN users d ON doc.user_id = d.id
                 JOIN specializations s ON doc.specialization_id = s.id
                 WHERE a.patient_id = ? AND a.status IN ("pending", "confirmed")
