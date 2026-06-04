@@ -10,6 +10,13 @@ class Doctor extends BaseModel {
         );
     }
 
+    public function findById(int $doctorId): ?array {
+        return $this->fetchOne(
+            'SELECT d.*, u.name as user_name, u.email, s.name as specialization FROM doctors d JOIN users u ON d.user_id = u.id JOIN specializations s ON d.specialization_id = s.id WHERE d.user_id = ?',
+            [$doctorId]
+        );
+    }
+
     public function getAll(): array {
         return $this->fetchAll(
             'SELECT d.*, u.name as user_name, s.name as specialization FROM doctors d JOIN users u ON d.user_id = u.id JOIN specializations s ON d.specialization_id = s.id ORDER BY u.name ASC'
@@ -22,6 +29,11 @@ class Doctor extends BaseModel {
             'SELECT d.*, u.name as user_name, u.email, s.name as specialization FROM doctors d JOIN users u ON d.user_id = u.id JOIN specializations s ON d.specialization_id = s.id ORDER BY u.name ASC LIMIT ? OFFSET ?',
             [ITEMS_PER_PAGE, $offset]
         );
+    }
+
+    public function countAll(): int {
+        $result = $this->fetchOne('SELECT COUNT(*) as total FROM doctors');
+        return $result ? (int) $result['total'] : 0;
     }
 
     public function create(array $data): int {
@@ -47,12 +59,12 @@ class Doctor extends BaseModel {
             $params[] = $value;
         }
         $params[] = $doctorId;
-        $stmt = $this->execute('UPDATE doctors SET ' . implode(', ', $fields) . ' WHERE id = ?', $params);
+        $stmt = $this->execute('UPDATE doctors SET ' . implode(', ', $fields) . ' WHERE user_id = ?', $params);
         return $stmt !== false;
     }
 
     public function getAvailableDays(int $doctorId): array {
-        $row = $this->fetchOne('SELECT available_days FROM doctors WHERE id = ?', [$doctorId]);
+        $row = $this->fetchOne('SELECT available_days FROM doctors WHERE user_id = ?', [$doctorId]);
         return $row ? array_filter(array_map('trim', explode(',', $row['available_days']))) : [];
     }
 }
