@@ -28,6 +28,7 @@ class DashboardController {
         if ($role === 'admin') {
             $totalByRole = $this->userModel->countByRole();
             $todayAppointments = $this->appointmentModel->countByDate(date('Y-m-d'));
+            $todayAppointmentsList = $this->appointmentModel->getTodayAppointments();
             $statusBreakdown = $this->appointmentModel->countByStatusForWeek();
             $recent = $this->appointmentModel->getRecentAppointments(5);
             require_once __DIR__ . '/../views/dashboard/admin.php';

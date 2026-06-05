@@ -1,49 +1,116 @@
 <?php require_once __DIR__ . '/../partials/header.php'; ?>
-<section class="content">
-    <div class="content-header">
-        <h1>Edit Doctor</h1>
-    </div>
-    <?php displayFlash(); ?>
-    <div class="card">
-        <div class="card-header">
-            <h3><?php echo htmlspecialchars($doctor['user_name'], ENT_QUOTES, 'UTF-8'); ?></h3>
+
+<!-- Content Header (Page header) -->
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1 class="m-0"><i class="fas fa-user-edit mr-2"></i>Edit Doctor</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="index.php?page=dashboard">Home</a></li>
+                    <li class="breadcrumb-item"><a href="index.php?page=doctors">Doctors</a></li>
+                    <li class="breadcrumb-item active">Edit</li>
+                </ol>
+            </div>
         </div>
-        <form method="POST" action="index.php?page=doctors&action=edit&id=<?php echo $doctor['id']; ?>">
-            <div class="card-body">
-                <?php echo CSRF::input(); ?>
-                <div class="form-group">
-                    <label for="specialization_id">Specialization *</label>
-                    <select id="specialization_id" name="specialization_id" required>
-                        <option value="">-- Select --</option>
-                        <?php foreach ($specializations as $spec): ?>
-                            <option value="<?php echo $spec['id']; ?>" <?php echo ($spec['id'] == $doctor['specialization_id']) ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($spec['name'], ENT_QUOTES, 'UTF-8'); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
+    </div>
+</div>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <?php displayFlash(); ?>
+        
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Edit Doctor: <?php echo htmlspecialchars($doctor['user_name'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></h3>
+                    </div>
+                    <form method="POST" action="index.php?page=doctors&action=edit&id=<?php echo $doctor['id']; ?>">
+                        <div class="card-body">
+                            <?php echo CSRF::input(); ?>
+                            <div class="form-group">
+                                <label for="specialization_id">Specialization <span class="text-danger">*</span></label>
+                                <select class="form-control" id="specialization_id" name="specialization_id" required>
+                                    <option value="">-- Select Specialization --</option>
+                                    <?php foreach ($specializations as $spec): ?>
+                                        <option value="<?php echo $spec['id']; ?>" <?php echo ($spec['id'] == $doctor['specialization_id']) ? 'selected' : ''; ?>>
+                                            <?php echo htmlspecialchars($spec['name'], ENT_QUOTES, 'UTF-8'); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="consultation_fee">Consultation Fee</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">$</span>
+                                    </div>
+                                    <input type="number" class="form-control" id="consultation_fee" name="consultation_fee" step="0.01" value="<?php echo htmlspecialchars($doctor['consultation_fee'] ?? 0, ENT_QUOTES, 'UTF-8'); ?>">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Available Days</label>
+                                <div class="row">
+                                    <?php 
+                                    $availableDays = !empty($doctor['available_days']) ? explode(',', $doctor['available_days']) : [];
+                                    $availableDays = array_map('trim', $availableDays);
+                                    foreach (['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $day): 
+                                    ?>
+                                    <div class="col-md-auto">
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input" type="checkbox" id="day_<?php echo $day; ?>" name="available_days[]" value="<?php echo $day; ?>" <?php echo in_array($day, $availableDays) ? 'checked' : ''; ?>>
+                                            <label for="day_<?php echo $day; ?>" class="custom-control-label"><?php echo $day; ?></label>
+                                        </div>
+                                    </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="bio">Biography</label>
+                                <textarea class="form-control" id="bio" name="bio" rows="4" placeholder="Enter doctor biography..."><?php echo htmlspecialchars($doctor['bio'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save mr-1"></i> Save Changes
+                            </button>
+                            <a href="index.php?page=doctors" class="btn btn-secondary">
+                                <i class="fas fa-times mr-1"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <label for="consultation_fee">Consultation Fee</label>
-                    <input type="number" id="consultation_fee" name="consultation_fee" step="0.01" value="<?php echo $doctor['consultation_fee'] ?? 0; ?>">
-                </div>
-                <div class="form-group">
-                    <label>Available Days</label>
-                    <div>
-                        <?php foreach (['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $day): ?>
-                            <label><input type="checkbox" name="available_days[]" value="<?php echo $day; ?>" <?php echo in_array($day, $availableDays) ? 'checked' : ''; ?>> <?php echo $day; ?></label>
-                        <?php endforeach; ?>
+            </div>
+            <div class="col-md-4">
+                <div class="card card-info">
+                    <div class="card-header">
+                        <h3 class="card-title"><i class="fas fa-info-circle mr-1"></i>Doctor Details</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-sm">
+                            <tr>
+                                <td><strong>Doctor ID:</strong></td>
+                                <td><?php echo (int) $doctor['id']; ?></td>
+                            </tr>
+                            <tr>
+                                <td><strong>User ID:</strong></td>
+                                <td><?php echo (int) $doctor['user_id']; ?></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Created:</strong></td>
+                                <td><?php echo isset($doctor['created_at']) ? htmlspecialchars(formatDate($doctor['created_at']), ENT_QUOTES, 'UTF-8') : 'N/A'; ?></td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label for="bio">Bio</label>
-                    <textarea id="bio" name="bio" rows="4"><?php echo htmlspecialchars($doctor['bio'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
-                </div>
             </div>
-            <div class="card-footer">
-                <button type="submit" class="btn">Save</button>
-                <a href="index.php?page=doctors" class="btn" style="background:#6c757d;">Cancel</a>
-            </div>
-        </form>
+        </div>
     </div>
 </section>
-<?php require_once __DIR__ . '/../layouts/footer.php'; ?>
+<!-- /.content -->
+
+<?php require_once __DIR__ . '/../partials/footer.php'; ?>

@@ -33,7 +33,7 @@ function displayFlash(): void {
             'warning' => 'alert-warning',
             default => 'alert-info',
         };
-        echo "<div class=\"alert $class\">" . htmlspecialchars($message, ENT_QUOTES, 'UTF-8') . "</div>";
+        echo "<div class=\"alert $class alert-dismissible fade show\" role=\"alert\">" . htmlspecialchars($message, ENT_QUOTES, 'UTF-8') . "<button type=\"button\" class=\"btn-close\" data-dismiss=\"alert\" aria-label=\"Close\"></button></div>";
     }
 
     unset($_SESSION['flash']);

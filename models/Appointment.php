@@ -279,4 +279,15 @@ class Appointment extends BaseModel {
                 LIMIT 1';
         return $this->fetchOne($sql, [$patientId]);
     }
+
+    public function getTodayAppointments(): array {
+        $sql = 'SELECT a.*, u.name as patient_name, d.name as doctor_name
+                FROM appointments a
+                JOIN users u ON a.patient_id = u.id
+                JOIN doctors doc ON a.doctor_id = doc.user_id
+                JOIN users d ON doc.user_id = d.id
+                WHERE a.appt_date = CURDATE()
+                ORDER BY a.appt_time ASC';
+        return $this->fetchAll($sql);
+    }
 }

@@ -1,10 +1,4 @@
-        </div>
-    </div>
-    <footer class="main-footer">
-        <strong>&copy; 2026 ClinicDesk.</strong> All rights reserved.
-    </footer>
-</div>
-<script src="/public/assets/adminlte/plugins/jquery/jquery.min.js"></script>
-<script src="/public/assets/adminlte/js/adminlte.min.js"></script>
-</body>
-</html>
+<?php
+// This file is deprecated. Please use views/partials/footer.php instead.
+// Redirecting to new partial for backward compatibility.
+require_once __DIR__ . '/../partials/footer.php';
