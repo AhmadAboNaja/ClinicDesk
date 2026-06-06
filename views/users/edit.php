@@ -27,31 +27,31 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Edit User: <?php echo htmlspecialchars($user['name'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                        <h3 class="card-title">Edit User: <?php echo htmlspecialchars($edittingUser['name'], ENT_QUOTES, 'UTF-8'); ?></h3>
                     </div>
-                    <form method="POST" action="index.php?page=users&action=edit&id=<?php echo $user['id']; ?>">
+                    <form method="POST" action="index.php?page=users&action=edit&id=<?php echo $edittingUser['id']; ?>">
                         <div class="card-body">
                             <?php echo CSRF::input(); ?>
                             <div class="form-group">
                                 <label for="name">Full Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($user['name'], ENT_QUOTES, 'UTF-8'); ?>" required>
+                                <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($edittingUser['name'], ENT_QUOTES, 'UTF-8'); ?>" required>
                             </div>
                             <div class="form-group">
                                 <label for="email">Email Address</label>
-                                <input type="email" class="form-control" id="email" value="<?php echo htmlspecialchars($user['email'], ENT_QUOTES, 'UTF-8'); ?>" readonly disabled>
+                                <input type="email" class="form-control" id="email" value="<?php echo htmlspecialchars($edittingUser['email'], ENT_QUOTES, 'UTF-8'); ?>" readonly disabled>
                                 <small class="form-text text-muted">Email address cannot be changed.</small>
                             </div>
                             <div class="form-group">
                                 <label for="phone">Phone Number</label>
-                                <input type="tel" class="form-control" id="phone" name="phone" value="<?php echo htmlspecialchars($user['phone'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
+                                <input type="tel" class="form-control" id="phone" name="phone" value="<?php echo htmlspecialchars($edittingUser['phone'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
                             </div>
                             <div class="form-group">
                                 <label>Role</label>
-                                <input type="text" class="form-control" value="<?php echo htmlspecialchars(ucfirst($user['role']), ENT_QUOTES, 'UTF-8'); ?>" readonly disabled>
+                                <input type="text" class="form-control" value="<?php echo htmlspecialchars(ucfirst($edittingUser['role']), ENT_QUOTES, 'UTF-8'); ?>" readonly disabled>
                             </div>
                             <div class="form-group">
                                 <div class="custom-control custom-switch">
-                                    <input type="checkbox" class="custom-control-input" id="is_active" name="is_active" value="1" <?php echo $user['is_active'] ? 'checked' : ''; ?>>
+                                    <input type="checkbox" class="custom-control-input" id="is_active" name="is_active" value="1" <?php echo $edittingUser['is_active'] ? 'checked' : ''; ?>>
                                     <label class="custom-control-label" for="is_active">Active User</label>
                                 </div>
                                 <small class="form-text text-muted">Inactive users cannot login to the system.</small>
@@ -77,15 +77,15 @@
                         <table class="table table-sm">
                             <tr>
                                 <td><strong>User ID:</strong></td>
-                                <td><?php echo (int) $user['id']; ?></td>
+                                <td><?php echo (int) $edittingUser['id']; ?></td>
                             </tr>
                             <tr>
                                 <td><strong>Created:</strong></td>
-                                <td><?php echo isset($user['created_at']) ? htmlspecialchars(formatDate($user['created_at']), ENT_QUOTES, 'UTF-8') : 'N/A'; ?></td>
+                                <td><?php echo isset($edittingUser['created_at']) ? htmlspecialchars(formatDate($edittingUser['created_at']), ENT_QUOTES, 'UTF-8') : 'N/A'; ?></td>
                             </tr>
                             <tr>
                                 <td><strong>Last Login:</strong></td>
-                                <td><?php echo isset($user['last_login']) && $user['last_login'] ? htmlspecialchars($user['last_login'], ENT_QUOTES, 'UTF-8') : 'Never'; ?></td>
+                                <td><?php echo isset($edittingUser['last_login']) && $edittingUser['last_login'] ? htmlspecialchars($edittingUser['last_login'], ENT_QUOTES, 'UTF-8') : 'Never'; ?></td>
                             </tr>
                         </table>
                     </div>

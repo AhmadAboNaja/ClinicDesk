@@ -22,14 +22,14 @@
 <section class="content">
     <div class="container-fluid">
         <?php displayFlash(); ?>
-        
+
         <div class="row">
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Edit Doctor: <?php echo htmlspecialchars($doctor['user_name'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></h3>
+                        <h3 class="card-title">Edit Doctor: <?php echo htmlspecialchars($editedDoctor['user_name'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></h3>
                     </div>
-                    <form method="POST" action="index.php?page=doctors&action=edit&id=<?php echo $doctor['id']; ?>">
+                    <form method="POST" action="index.php?page=doctors&action=edit&id=<?= $editedDoctor['user_id']; ?>">
                         <div class="card-body">
                             <?php echo CSRF::input(); ?>
                             <div class="form-group">
@@ -37,7 +37,7 @@
                                 <select class="form-control" id="specialization_id" name="specialization_id" required>
                                     <option value="">-- Select Specialization --</option>
                                     <?php foreach ($specializations as $spec): ?>
-                                        <option value="<?php echo $spec['id']; ?>" <?php echo ($spec['id'] == $doctor['specialization_id']) ? 'selected' : ''; ?>>
+                                        <option value="<?php echo $spec['id']; ?>" <?php echo ($spec['id'] == $editedDoctor['specialization_id']) ? 'selected' : ''; ?>>
                                             <?php echo htmlspecialchars($spec['name'], ENT_QUOTES, 'UTF-8'); ?>
                                         </option>
                                     <?php endforeach; ?>
@@ -49,29 +49,29 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">$</span>
                                     </div>
-                                    <input type="number" class="form-control" id="consultation_fee" name="consultation_fee" step="0.01" value="<?php echo htmlspecialchars($doctor['consultation_fee'] ?? 0, ENT_QUOTES, 'UTF-8'); ?>">
+                                    <input type="number" class="form-control" id="consultation_fee" name="consultation_fee" step="0.01" value="<?php echo htmlspecialchars($editedDoctor['consultation_fee'] ?? 0, ENT_QUOTES, 'UTF-8'); ?>">
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label>Available Days</label>
                                 <div class="row">
-                                    <?php 
-                                    $availableDays = !empty($doctor['available_days']) ? explode(',', $doctor['available_days']) : [];
+                                    <?php
+                                    $availableDays = !empty($editedDoctor['available_days']) ? explode(',', $editedDoctor['available_days']) : [];
                                     $availableDays = array_map('trim', $availableDays);
-                                    foreach (['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $day): 
+                                    foreach (['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $day):
                                     ?>
-                                    <div class="col-md-auto">
-                                        <div class="custom-control custom-checkbox">
-                                            <input class="custom-control-input" type="checkbox" id="day_<?php echo $day; ?>" name="available_days[]" value="<?php echo $day; ?>" <?php echo in_array($day, $availableDays) ? 'checked' : ''; ?>>
-                                            <label for="day_<?php echo $day; ?>" class="custom-control-label"><?php echo $day; ?></label>
+                                        <div class="col-md-auto">
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" type="checkbox" id="day_<?php echo $day; ?>" name="available_days[]" value="<?php echo $day; ?>" <?php echo in_array($day, $availableDays) ? 'checked' : ''; ?>>
+                                                <label for="day_<?php echo $day; ?>" class="custom-control-label"><?php echo $day; ?></label>
+                                            </div>
                                         </div>
-                                    </div>
                                     <?php endforeach; ?>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="bio">Biography</label>
-                                <textarea class="form-control" id="bio" name="bio" rows="4" placeholder="Enter doctor biography..."><?php echo htmlspecialchars($doctor['bio'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
+                                <textarea class="form-control" id="bio" name="bio" rows="4" placeholder="Enter doctor biography..."><?php echo htmlspecialchars($editedDoctor['bio'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                             </div>
                         </div>
                         <div class="card-footer">
@@ -94,15 +94,15 @@
                         <table class="table table-sm">
                             <tr>
                                 <td><strong>Doctor ID:</strong></td>
-                                <td><?php echo (int) $doctor['id']; ?></td>
+                                <td><?php echo (int) $editedDoctor['id']; ?></td>
                             </tr>
                             <tr>
                                 <td><strong>User ID:</strong></td>
-                                <td><?php echo (int) $doctor['user_id']; ?></td>
+                                <td><?php echo (int) $editedDoctor['user_id']; ?></td>
                             </tr>
                             <tr>
                                 <td><strong>Created:</strong></td>
-                                <td><?php echo isset($doctor['created_at']) ? htmlspecialchars(formatDate($doctor['created_at']), ENT_QUOTES, 'UTF-8') : 'N/A'; ?></td>
+                                <td><?php echo isset($editedDoctor['created_at']) ? htmlspecialchars(formatDate($editedDoctor['created_at']), ENT_QUOTES, 'UTF-8') : 'N/A'; ?></td>
                             </tr>
                         </table>
                     </div>

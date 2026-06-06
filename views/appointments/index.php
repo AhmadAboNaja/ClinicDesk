@@ -95,7 +95,7 @@
                                                         <i class="fas fa-eye"></i>
                                                     </a>
                                                     <?php if (Auth::role() === 'patient' && $appt['status'] === 'pending'): ?>
-                                                    <form method="POST" action="index.php?page=appointments&action=cancel&id=<?php echo $appt['id']; ?>" style="display:inline;">
+                                                    -<form method="POST" action="index.php?page=appointments&action=cancel&id=<?php echo $appt['id']; ?>" style="display:inline;">
                                                         <?php echo CSRF::input(); ?>
                                                         <button type="submit" class="btn btn-sm btn-danger" title="Cancel" onclick="return confirm('Are you sure you want to cancel this appointment?');">
                                                             <i class="fas fa-times"></i>
@@ -113,7 +113,7 @@
                                                     </form>
                                                     <?php endif; ?>
                                                     <?php if ((Auth::role() === 'doctor' || Auth::role() === 'admin') && in_array($appt['status'], ['confirmed', 'pending'])): ?>
-                                                    <a href="index.php?page=prescriptions&action=add&appointment_id=<?php echo $appt['id']; ?>" class="btn btn-sm btn-warning" title="Add Prescription">
+                                                   - <a href="index.php?page=prescriptions&action=add&appointment_id=<?php echo $appt['id']; ?>" class="btn btn-sm btn-warning" title="Add Prescription">
                                                         <i class="fas fa-prescription"></i>
                                                     </a>
                                                     <?php endif; ?>

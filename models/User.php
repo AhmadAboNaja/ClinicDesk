@@ -11,6 +11,14 @@ class User extends BaseModel {
         return $this->fetchOne('SELECT * FROM users WHERE email = ?', [$email]);
     }
 
+    public function getByRole(string $role = ''): array {
+        if ($role !== '') {
+            return $this->fetchAll('SELECT * FROM users WHERE role = ? ORDER BY created_at DESC', [$role]);
+        }
+
+        return $this->fetchAll('SELECT * FROM users ORDER BY created_at DESC');
+    }
+
     public function create(array $data): int {
         $sql = 'INSERT INTO users (name, email, password, role, phone, is_active, first_login) VALUES (?, ?, ?, ?, ?, ?, ?)';
         $this->execute($sql, [

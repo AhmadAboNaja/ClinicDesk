@@ -65,7 +65,7 @@
                                             <td><?php echo isset($doc['consultation_fee']) ? '$' . number_format($doc['consultation_fee'], 2) : 'N/A'; ?></td>
                                             <td><?php echo htmlspecialchars($doc['available_days'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></td>
                                             <td>
-                                                <a href="index.php?page=doctors&action=edit&id=<?php echo $doc['id']; ?>" class="btn btn-sm btn-info">
+                                                <a href="index.php?page=doctors&action=edit&id=<?php echo $doc['user_id']; ?>" class="btn btn-sm btn-info">
                                                     <i class="fas fa-edit"></i> Edit
                                                 </a>
                                             </td>

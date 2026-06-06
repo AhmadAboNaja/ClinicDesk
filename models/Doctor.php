@@ -2,28 +2,45 @@
 
 require_once __DIR__ . '/BaseModel.php';
 
-class Doctor extends BaseModel {
-    public function findByUserId(int $userId): ?array {
+class Doctor extends BaseModel
+{
+
+    public function findByUserId(int $userId): ?array
+    {
         return $this->fetchOne(
             'SELECT d.*, u.name as user_name, u.email, s.name as specialization FROM doctors d JOIN users u ON d.user_id = u.id JOIN specializations s ON d.specialization_id = s.id WHERE d.user_id = ?',
             [$userId]
         );
     }
-
-    public function findById(int $doctorId): ?array {
+    public function getDoctorsAvailable(): array
+    {
+        return $this->fetchAll("
+        SELECT u.*
+        FROM users u
+        WHERE u.role = 'doctor'
+        AND u.id NOT IN (
+            SELECT user_id FROM doctors
+        )
+        ORDER BY u.created_at DESC
+    ");
+    }
+    public function findById(int $doctorId): ?array
+    {
         return $this->fetchOne(
             'SELECT d.*, u.name as user_name, u.email, s.name as specialization FROM doctors d JOIN users u ON d.user_id = u.id JOIN specializations s ON d.specialization_id = s.id WHERE d.user_id = ?',
             [$doctorId]
         );
     }
 
-    public function getAll(): array {
+    public function getAll(): array
+    {
         return $this->fetchAll(
             'SELECT d.*, u.name as user_name, s.name as specialization FROM doctors d JOIN users u ON d.user_id = u.id JOIN specializations s ON d.specialization_id = s.id ORDER BY u.name ASC'
         );
     }
 
-    public function getAllPaginated(int $page): array {
+    public function getAllPaginated(int $page): array
+    {
         $offset = max(0, ($page - 1) * ITEMS_PER_PAGE);
         return $this->fetchAll(
             'SELECT d.*, u.name as user_name, u.email, s.name as specialization FROM doctors d JOIN users u ON d.user_id = u.id JOIN specializations s ON d.specialization_id = s.id ORDER BY u.name ASC LIMIT ? OFFSET ?',
@@ -31,12 +48,14 @@ class Doctor extends BaseModel {
         );
     }
 
-    public function countAll(): int {
+    public function countAll(): int
+    {
         $result = $this->fetchOne('SELECT COUNT(*) as total FROM doctors');
         return $result ? (int) $result['total'] : 0;
     }
 
-    public function create(array $data): int {
+    public function create(array $data): int
+    {
         $this->execute(
             'INSERT INTO doctors (user_id, specialization_id, bio, consultation_fee, available_days, profile_photo) VALUES (?, ?, ?, ?, ?, ?)',
             [
@@ -51,7 +70,8 @@ class Doctor extends BaseModel {
         return (int) $this->db->lastInsertId();
     }
 
-    public function update(int $doctorId, array $data): bool {
+    public function update(int $doctorId, array $data): bool
+    {
         $fields = [];
         $params = [];
         foreach ($data as $column => $value) {
@@ -63,7 +83,8 @@ class Doctor extends BaseModel {
         return $stmt !== false;
     }
 
-    public function getAvailableDays(int $doctorId): array {
+    public function getAvailableDays(int $doctorId): array
+    {
         $row = $this->fetchOne('SELECT available_days FROM doctors WHERE user_id = ?', [$doctorId]);
         return $row ? array_filter(array_map('trim', explode(',', $row['available_days']))) : [];
     }

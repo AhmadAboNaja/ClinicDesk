@@ -6,14 +6,17 @@ require_once __DIR__ . '/../core/helpers.php';
 require_once __DIR__ . '/../core/Paginator.php';
 require_once __DIR__ . '/../models/User.php';
 
-class UserController {
+class UserController
+{
     private User $userModel;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->userModel = new User();
     }
 
-    public function index(): void {
+    public function index(): void
+    {
         Auth::requireRole('admin');
         $page = (int) ($_GET['page_num'] ?? 1);
         $role = $_GET['role'] ?? '';
@@ -29,7 +32,8 @@ class UserController {
         require __DIR__ . '/../views/layouts/footer.php';
     }
 
-    public function create(): void {
+    public function create(): void
+    {
         Auth::requireRole('admin');
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $token = $_POST['csrf_token'] ?? '';
@@ -59,11 +63,14 @@ class UserController {
         require __DIR__ . '/../views/layouts/footer.php';
     }
 
-    public function edit(): void {
+    public function edit(): void
+    {
         Auth::requireRole('admin');
         $id = (int) ($_GET['id'] ?? 0);
-        $user = $this->userModel->findById($id);
-        if (!$user) {
+
+        $edittingUser = $this->userModel->findById($id);
+
+        if (!$edittingUser) {
             flash('error', 'User not found.');
             redirect('index.php?page=users');
         }
@@ -76,8 +83,9 @@ class UserController {
             }
 
             $data = [
-                'name' => $_POST['name'] ?? $user['name'],
-                'phone' => $_POST['phone'] ?? $user['phone'],
+                'name' => $_POST['name'] ?? $edittingUser['name'],
+                'phone' => $_POST['phone'] ?? $edittingUser['phone'],
+                'is_active' => isset($_POST['is_active']) ? 1 : 0
             ];
 
             $this->userModel->update($id, $data);
@@ -91,7 +99,8 @@ class UserController {
         require __DIR__ . '/../views/layouts/footer.php';
     }
 
-    public function toggleActive(): void {
+    public function toggleActive(): void
+    {
         Auth::requireRole('admin');
         $id = (int) ($_GET['id'] ?? 0);
         $token = $_POST['csrf_token'] ?? '';

@@ -7,16 +7,19 @@ require_once __DIR__ . '/../core/Paginator.php';
 require_once __DIR__ . '/../models/Doctor.php';
 require_once __DIR__ . '/../models/Specialization.php';
 
-class DoctorController {
+class DoctorController
+{
     private Doctor $doctorModel;
     private Specialization $specializationModel;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->doctorModel = new Doctor();
         $this->specializationModel = new Specialization();
     }
 
-    public function index(): void {
+    public function index(): void
+    {
         Auth::requireRole('admin', 'doctor');
         $page = (int) ($_GET['page_num'] ?? 1);
         $total = $this->doctorModel->countAll();
@@ -29,9 +32,11 @@ class DoctorController {
         require __DIR__ . '/../views/layouts/footer.php';
     }
 
-    public function create(): void {
+    public function create(): void
+    {
         Auth::requireRole('admin');
         $specializations = $this->specializationModel->getAll();
+        $doctorUsers = $this->doctorModel->getDoctorsAvailable();
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $token = $_POST['csrf_token'] ?? '';
@@ -60,11 +65,14 @@ class DoctorController {
         require __DIR__ . '/../views/layouts/footer.php';
     }
 
-    public function edit(): void {
+    public function edit(): void
+    {
         Auth::requireRole('admin');
+
         $id = (int) ($_GET['id'] ?? 0);
-        $doctor = $this->doctorModel->findById($id);
-        if (!$doctor) {
+
+        $editedDoctor = $this->doctorModel->findById($id);
+        if (!$editedDoctor) {
             flash('error', 'Doctor not found.');
             redirect('index.php?page=doctors');
         }

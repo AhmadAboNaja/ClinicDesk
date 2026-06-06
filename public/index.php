@@ -59,6 +59,7 @@ switch ($page) {
         Auth::requireRole('admin');
         require_once __DIR__ . '/../controllers/UserController.php';
         $controller = new UserController();
+
         if ($action === 'create') {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $controller->create();
@@ -67,21 +68,11 @@ switch ($page) {
                 require_once __DIR__ . '/../views/users/create.php';
             }
         } elseif ($action === 'edit') {
-            $userId = $_GET['id'] ?? null;
-            if (!$userId) {
-                header('Location: index.php?page=users');
-                exit;
-            }
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $controller->edit($userId);
-            } else {
-                $pageTitle = 'Edit User';
-                require_once __DIR__ . '/../views/users/edit.php';
-            }
+            $controller->edit();
+        } elseif ($action === 'toggleActive') {
+            $controller->toggleActive();
         } else {
-            $page_num = $_GET['page_num'] ?? 1;
-            $pageTitle = 'User Management';
-            require_once __DIR__ . '/../views/users/index.php';
+            $controller->index(); // calling index method to handle pagination and listing
         }
         break;
 
@@ -89,29 +80,13 @@ switch ($page) {
         Auth::requireRole('admin');
         require_once __DIR__ . '/../controllers/DoctorController.php';
         $controller = new DoctorController();
+
         if ($action === 'create') {
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $controller->create();
-            } else {
-                $pageTitle = 'Create Doctor';
-                require_once __DIR__ . '/../views/doctors/create.php';
-            }
+            $controller->create();
         } elseif ($action === 'edit') {
-            $doctorId = $_GET['id'] ?? null;
-            if (!$doctorId) {
-                header('Location: index.php?page=doctors');
-                exit;
-            }
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $controller->edit($doctorId);
-            } else {
-                $pageTitle = 'Edit Doctor';
-                require_once __DIR__ . '/../views/doctors/edit.php';
-            }
+            $controller->edit();
         } else {
-            $page_num = $_GET['page_num'] ?? 1;
-            $pageTitle = 'Doctor Management';
-            require_once __DIR__ . '/../views/doctors/index.php';
+            $controller->index();
         }
         break;
 
@@ -143,13 +118,7 @@ switch ($page) {
         require_once __DIR__ . '/../controllers/AppointmentController.php';
         $controller = new AppointmentController();
         if ($action === 'book') {
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                $controller->book();
-            } else {
-                Auth::requireRole('patient');
-                $pageTitle = 'Book Appointment';
-                require_once __DIR__ . '/../views/appointments/book.php';
-            }
+            $controller->book();
         } elseif ($action === 'cancel') {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 Auth::requireRole('patient');
@@ -167,6 +136,7 @@ switch ($page) {
                 exit;
             }
         } else {
+            $controller->index();
             $page_num = $_GET['page_num'] ?? 1;
             $pageTitle = 'Appointments';
             require_once __DIR__ . '/../views/appointments/index.php';

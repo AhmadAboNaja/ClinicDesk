@@ -7,20 +7,26 @@ require_once __DIR__ . '/../core/Paginator.php';
 require_once __DIR__ . '/../models/Appointment.php';
 require_once __DIR__ . '/../models/Doctor.php';
 
-class AppointmentController {
+class AppointmentController
+{
     private Appointment $appointmentModel;
     private Doctor $doctorModel;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->appointmentModel = new Appointment();
         $this->doctorModel = new Doctor();
     }
 
-    public function book(): void {
+    public function book(): void
+    {
         Auth::requireRole('patient');
         $user = Auth::currentUser();
         $doctors = $this->doctorModel->getAll();
-
+        // Convert available_days string to array for JS usage
+        foreach ($doctors as &$doc) {
+            $doc['days'] = array_filter(explode(',', $doc['available_days']));
+        }
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $token = $_POST['csrf_token'] ?? '';
             if (!CSRF::validateToken($token)) {
@@ -65,7 +71,8 @@ class AppointmentController {
         require __DIR__ . '/../views/layouts/footer.php';
     }
 
-    public function index(): void {
+    public function index(): void
+    {
         Auth::requireRole('admin', 'doctor', 'patient');
         $user = Auth::currentUser();
         $role = $user['role'];
@@ -100,7 +107,8 @@ class AppointmentController {
         require __DIR__ . '/../views/layouts/footer.php';
     }
 
-    public function updateStatus(): void {
+    public function updateStatus(): void
+    {
         Auth::requireRole('admin', 'doctor');
         $id = (int) ($_GET['id'] ?? 0);
         $status = $_POST['status'] ?? '';
@@ -116,7 +124,8 @@ class AppointmentController {
         redirect('index.php?page=appointments');
     }
 
-    public function cancel(): void {
+    public function cancel(): void
+    {
         Auth::requireRole('patient');
         $user = Auth::currentUser();
         $id = (int) ($_GET['id'] ?? 0);

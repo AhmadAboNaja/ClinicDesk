@@ -66,10 +66,30 @@
                                                 <?php endif; ?>
                                             </td>
                                             <td>
-                                                <a href="index.php?page=users&action=edit&id=<?php echo $user['id']; ?>" class="btn btn-sm btn-info">
-                                                    <i class="fas fa-edit"></i> Edit
-                                                </a>
-                                            </td>
+    <a href="index.php?page=users&action=edit&id=<?php echo $user['id']; ?>"
+       class="btn btn-sm btn-info">
+        <i class="fas fa-edit"></i> Edit
+    </a>
+
+    <form method="POST"
+          action="index.php?page=users&action=toggleActive&id=<?php echo $user['id']; ?>"
+          style="display:inline-block;"
+          onsubmit="return confirm('Change user status?');">
+
+        <?php echo CSRF::input(); ?>
+
+        <?php if ($user['is_active']): ?>
+            <button type="submit" class="btn btn-sm btn-warning">
+                <i class="fas fa-user-slash"></i> Deactivate
+            </button>
+        <?php else: ?>
+            <button type="submit" class="btn btn-sm btn-success">
+                <i class="fas fa-user-check"></i> Activate
+            </button>
+        <?php endif; ?>
+
+    </form>
+</td>
                                         </tr>
                                         <?php endforeach; ?>
                                     <?php else: ?>

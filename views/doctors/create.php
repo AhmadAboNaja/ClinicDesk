@@ -22,7 +22,7 @@
 <section class="content">
     <div class="container-fluid">
         <?php displayFlash(); ?>
-        
+
         <div class="row">
             <div class="col-md-8">
                 <div class="card">
@@ -33,9 +33,22 @@
                         <div class="card-body">
                             <?php echo CSRF::input(); ?>
                             <div class="form-group">
-                                <label for="user_id">User ID <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control" id="user_id" name="user_id" required placeholder="Enter user ID">
-                                <small class="form-text text-muted">The user must already exist with the 'doctor' role.</small>
+                                <label for="user_id">Doctor User <span class="text-danger">*</span></label>
+
+                                <select class="form-control" name="user_id" required>
+                                    <option value="">-- Select Doctor --</option>
+
+                                    <?php foreach ($doctorUsers as $u): ?>
+                                        <option value="<?= $u['id'] ?>">
+                                            <?= htmlspecialchars($u['name']) ?> (<?= htmlspecialchars($u['email']) ?>)
+                                        </option>
+                                    <?php endforeach; ?>
+
+                                </select>
+
+                                <small class="form-text text-muted">
+                                    Select an existing user with role "doctor"
+                                </small>
                             </div>
                             <div class="form-group">
                                 <label for="specialization_id">Specialization <span class="text-danger">*</span></label>
@@ -59,12 +72,12 @@
                                 <label>Available Days</label>
                                 <div class="row">
                                     <?php foreach (['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] as $day): ?>
-                                    <div class="col-md-auto">
-                                        <div class="custom-control custom-checkbox">
-                                            <input class="custom-control-input" type="checkbox" id="day_<?php echo $day; ?>" name="available_days[]" value="<?php echo $day; ?>">
-                                            <label for="day_<?php echo $day; ?>" class="custom-control-label"><?php echo $day; ?></label>
+                                        <div class="col-md-auto">
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" type="checkbox" id="day_<?php echo $day; ?>" name="available_days[]" value="<?php echo $day; ?>">
+                                                <label for="day_<?php echo $day; ?>" class="custom-control-label"><?php echo $day; ?></label>
+                                            </div>
                                         </div>
-                                    </div>
                                     <?php endforeach; ?>
                                 </div>
                             </div>
