@@ -3,17 +3,22 @@
 require_once __DIR__ . '/../core/Auth.php';
 require_once __DIR__ . '/../core/helpers.php';
 require_once __DIR__ . '/../models/Appointment.php';
-
-class ReportController {
+require_once __DIR__ . '/../models/Doctor.php';
+class ReportController
+{
     private Appointment $appointmentModel;
+    private Doctor $doctorModel;
 
-    public function __construct() {
+    public function __construct()
+    {
+        $this->doctorModel = new Doctor();
         $this->appointmentModel = new Appointment();
     }
 
-    public function index(): void {
+    public function index(): void
+    {
         Auth::requireRole('admin');
-
+        $appointments = [];
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $startDate = $_POST['start_date'] ?? null;
             $endDate = $_POST['end_date'] ?? null;
@@ -23,10 +28,9 @@ class ReportController {
                 redirect('index.php?page=reports');
             }
 
-            if (!empty($_GET['export']) && $_GET['export'] === 'csv') {
-                $this->exportCsv($startDate, $endDate);
+            if (!empty($_POST['export']) && $_POST['export'] === 'csv') {
+                $this->exportCsv();
             }
-
             $filters = [
                 'date_from' => $startDate,
                 'date_to' => $endDate,
@@ -36,17 +40,21 @@ class ReportController {
 
             $appointments = $this->appointmentModel->getAll(1, $filters);
         }
+        $doctors = $this->doctorModel->getAll();
 
+        $reportData = $appointments;
         $pageTitle = 'Reports';
         require __DIR__ . '/../views/partials/header.php';
         require __DIR__ . '/../views/reports/index.php';
         require __DIR__ . '/../views/layouts/footer.php';
     }
 
-    private function exportCsv(string $startDate, string $endDate): void {
+    private function exportCsv(): void
+    {
+
         $filters = [
-            'date_from' => $startDate,
-            'date_to' => $endDate,
+            'date_from' => $_POST['start_date'],
+            'date_to' => $_POST['end_date'],
             'doctor_id' => $_POST['doctor_id'] ?? '',
             'status' => $_POST['status'] ?? '',
         ];
