@@ -2,8 +2,10 @@
 
 require_once __DIR__ . '/BaseModel.php';
 
-class Appointment extends BaseModel {
-    public function book(array $data): bool {
+class Appointment extends BaseModel
+{
+    public function book(array $data): bool
+    {
         $sql = 'INSERT INTO appointments (patient_id, doctor_id, appt_date, appt_time, reason, status)
                 VALUES (?, ?, ?, ?, ?, ?)';
         try {
@@ -21,7 +23,8 @@ class Appointment extends BaseModel {
         }
     }
 
-    public function hasConflict(int $doctorId, string $date, string $time): bool {
+    public function hasConflict(int $doctorId, string $date, string $time): bool
+    {
         $result = $this->fetchOne(
             'SELECT COUNT(*) as total FROM appointments
              WHERE doctor_id = ? AND appt_date = ? AND appt_time = ? AND status != "cancelled"',
@@ -30,7 +33,8 @@ class Appointment extends BaseModel {
         return $result && (int) $result['total'] > 0;
     }
 
-    public function findById(int $id): ?array {
+    public function findById(int $id): ?array
+    {
         $sql = 'SELECT a.*, u.name as patient_name, u.email as patient_email,
                        d.name as doctor_name, s.name as specialization
                 FROM appointments a
@@ -42,7 +46,8 @@ class Appointment extends BaseModel {
         return $this->fetchOne($sql, [$id]);
     }
 
-    public function getByPatient(int $patientId, int $page, array $filters = []): array {
+    public function getByPatient(int $patientId, int $page, array $filters = []): array
+    {
         $offset = max(0, ($page - 1) * ITEMS_PER_PAGE);
         $conditions = [];
         $params = [];
@@ -79,7 +84,8 @@ class Appointment extends BaseModel {
         return $this->fetchAll($sql, $params);
     }
 
-    public function getByDoctor(int $doctorId, int $page, array $filters = []): array {
+    public function getByDoctor(int $doctorId, int $page, array $filters = []): array
+    {
         $offset = max(0, ($page - 1) * ITEMS_PER_PAGE);
         $conditions = [];
         $params = [];
@@ -114,7 +120,53 @@ class Appointment extends BaseModel {
         return $this->fetchAll($sql, $params);
     }
 
-    public function getAll(int $page, array $filters = []): array {
+    public function getAll(array $filters = []): array
+    {
+        $conditions = [];
+        $params = [];
+
+        if (!empty($filters['doctor_id'])) {
+            $conditions[] = 'a.doctor_id = ?';
+            $params[] = $filters['doctor_id'];
+        }
+
+        if (!empty($filters['patient_name'])) {
+            $conditions[] = 'u.name LIKE ?';
+            $params[] = '%' . $filters['patient_name'] . '%';
+        }
+
+        if (!empty($filters['status'])) {
+            $conditions[] = 'a.status = ?';
+            $params[] = $filters['status'];
+        }
+
+        if (!empty($filters['date_from'])) {
+            $conditions[] = 'a.appt_date >= ?';
+            $params[] = $filters['date_from'];
+        }
+
+        if (!empty($filters['date_to'])) {
+            $conditions[] = 'a.appt_date <= ?';
+            $params[] = $filters['date_to'];
+        }
+
+        $whereClause = implode(' AND ', $conditions);
+        if ($whereClause) {
+            $whereClause = 'WHERE ' . $whereClause;
+        }
+        $sql = "SELECT a.*, u.name as patient_name, d.name as doctor_name, s.name as specialization
+                FROM appointments a
+                JOIN users u ON a.patient_id = u.id
+                JOIN doctors doc ON a.doctor_id = doc.user_id
+                JOIN users d ON doc.user_id = d.id
+                JOIN specializations s ON doc.specialization_id = s.id
+                $whereClause
+                ORDER BY a.created_at DESC";
+        return $this->fetchAll($sql, $params);
+    }
+
+    public  function getPagenated(int $page, array $filters = []): array
+    {
         $offset = max(0, ($page - 1) * ITEMS_PER_PAGE);
         $conditions = [];
         $params = [];
@@ -159,7 +211,8 @@ class Appointment extends BaseModel {
         return $this->fetchAll($sql, $params);
     }
 
-    public function countFiltered(string $scope, int $scopeId, array $filters = []): int {
+    public function countFiltered(string $scope, int $scopeId, array $filters = []): int
+    {
         $conditions = [];
         $params = [];
 
@@ -182,7 +235,8 @@ class Appointment extends BaseModel {
         return $result ? (int) $result['total'] : 0;
     }
 
-    public function updateStatus(int $id, string $status, string $notes = ''): bool {
+    public function updateStatus(int $id, string $status, string $notes = ''): bool
+    {
         $params = [$status];
         if ($notes !== '') {
             $params[] = $notes;
@@ -195,12 +249,14 @@ class Appointment extends BaseModel {
         return $stmt !== false;
     }
 
-    public function countByDate(string $date): int {
+    public function countByDate(string $date): int
+    {
         $result = $this->fetchOne('SELECT COUNT(*) as total FROM appointments WHERE appt_date = ?', [$date]);
         return $result ? (int) $result['total'] : 0;
     }
 
-    public function countByStatusForWeek(): array {
+    public function countByStatusForWeek(): array
+    {
         return $this->fetchAll(
             'SELECT status, COUNT(*) as total FROM appointments
              WHERE WEEK(appt_date) = WEEK(NOW()) AND appt_date >= DATE_SUB(NOW(), INTERVAL 7 DAY)
@@ -208,7 +264,8 @@ class Appointment extends BaseModel {
         );
     }
 
-    public function getRecentAppointments(int $limit): array {
+    public function getRecentAppointments(int $limit): array
+    {
         $sql = 'SELECT a.*, u.name as patient_name, d.name as doctor_name, s.name as specialization
                 FROM appointments a
                 JOIN users u ON a.patient_id = u.id
@@ -220,7 +277,8 @@ class Appointment extends BaseModel {
         return $this->fetchAll($sql, [$limit]);
     }
 
-    public function getDoctorAppointmentsByDate(int $doctorId, string $date): array {
+    public function getDoctorAppointmentsByDate(int $doctorId, string $date): array
+    {
         $sql = 'SELECT a.*, u.name as patient_name
                 FROM appointments a
                 JOIN users u ON a.patient_id = u.id
@@ -229,7 +287,8 @@ class Appointment extends BaseModel {
         return $this->fetchAll($sql, [$doctorId, $date]);
     }
 
-    public function countDoctorAppointmentsSummary(int $doctorId): array {
+    public function countDoctorAppointmentsSummary(int $doctorId): array
+    {
         $sql = 'SELECT
                   (SELECT COUNT(*) FROM appointments WHERE doctor_id = ? AND DATE_FORMAT(appt_date, "%Y-%m") = DATE_FORMAT(NOW(), "%Y-%m")) as month_total,
                   (SELECT COUNT(*) FROM appointments WHERE doctor_id = ? AND status = "pending") as pending,
@@ -239,7 +298,8 @@ class Appointment extends BaseModel {
         return $result ?? ['month_total' => 0, 'pending' => 0, 'completed' => 0];
     }
 
-    public function getDoctorUpcomingAppointments(int $doctorId, int $limit): array {
+    public function getDoctorUpcomingAppointments(int $doctorId, int $limit): array
+    {
         $sql = 'SELECT a.*, u.name as patient_name
                 FROM appointments a
                 JOIN users u ON a.patient_id = u.id
@@ -250,7 +310,8 @@ class Appointment extends BaseModel {
         return $this->fetchAll($sql, [$doctorId, $limit]);
     }
 
-    public function countPatientActiveAppointments(int $patientId): int {
+    public function countPatientActiveAppointments(int $patientId): int
+    {
         $result = $this->fetchOne(
             'SELECT COUNT(*) as total FROM appointments
              WHERE patient_id = ? AND status IN ("pending", "confirmed")',
@@ -259,7 +320,8 @@ class Appointment extends BaseModel {
         return $result ? (int) $result['total'] : 0;
     }
 
-    public function countPatientCompletedAppointments(int $patientId): int {
+    public function countPatientCompletedAppointments(int $patientId): int
+    {
         $result = $this->fetchOne(
             'SELECT COUNT(*) as total FROM appointments WHERE patient_id = ? AND status = "completed"',
             [$patientId]
@@ -267,7 +329,8 @@ class Appointment extends BaseModel {
         return $result ? (int) $result['total'] : 0;
     }
 
-    public function getPatientNextAppointment(int $patientId): ?array {
+    public function getPatientNextAppointment(int $patientId): ?array
+    {
         $sql = 'SELECT a.*, d.name as doctor_name, s.name as specialization
                 FROM appointments a
                 JOIN doctors doc ON a.doctor_id = doc.user_id
@@ -280,7 +343,8 @@ class Appointment extends BaseModel {
         return $this->fetchOne($sql, [$patientId]);
     }
 
-    public function getTodayAppointments(): array {
+    public function getTodayAppointments(): array
+    {
         $sql = 'SELECT a.*, u.name as patient_name, d.name as doctor_name
                 FROM appointments a
                 JOIN users u ON a.patient_id = u.id

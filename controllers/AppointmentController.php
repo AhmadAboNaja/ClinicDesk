@@ -113,7 +113,7 @@ public function view(): void
             $filters['doctor_id'] = $_GET['doctor_id'] ?? '';
             $filters['patient_name'] = $_GET['patient_name'] ?? '';
             $total = $this->appointmentModel->countFiltered('admin', 0, $filters);
-            $appointments = $this->appointmentModel->getAll($page, $filters);
+            $appointments = $this->appointmentModel->getPagenated($page, $filters);
         }
 
         $paginator = new Paginator($total, ITEMS_PER_PAGE, $page);

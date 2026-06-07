@@ -38,7 +38,7 @@ class ReportController
                 'status' => $_POST['status'] ?? '',
             ];
 
-            $appointments = $this->appointmentModel->getAll(1, $filters);
+            $appointments = $this->appointmentModel->getPagenated(1, $filters);
         }
         $doctors = $this->doctorModel->getAll();
 
@@ -59,7 +59,7 @@ class ReportController
             'status' => $_POST['status'] ?? '',
         ];
 
-        $appointments = $this->appointmentModel->getAll(1, $filters);
+        $appointments = $this->appointmentModel->getAll($filters);
 
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="appointment_report_' . date('Y-m-d') . '.csv"');
