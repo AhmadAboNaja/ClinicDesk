@@ -19,18 +19,30 @@ class DoctorController
     }
 
     public function index(): void
-    {
-        Auth::requireRole('admin', 'doctor');
-        $page = (int) ($_GET['page_num'] ?? 1);
-        $total = $this->doctorModel->countAll();
-        $paginator = new Paginator($total, ITEMS_PER_PAGE, $page);
-        $doctors = $this->doctorModel->getAllPaginated($page);
+{
+    Auth::requireRole('admin', 'doctor');
 
-        $pageTitle = 'Doctors';
-        require __DIR__ . '/../views/partials/header.php';
-        require __DIR__ . '/../views/doctors/index.php';
-        require __DIR__ . '/../views/layouts/footer.php';
-    }
+    $page = (int) ($_GET['page_num'] ?? 1);
+    $search = $_GET['search'] ?? '';
+    $specialization = $_GET['specialization'] ?? '';
+
+    $total = $this->doctorModel->countDoctors($search, $specialization);
+
+    $paginator = new Paginator($total, ITEMS_PER_PAGE, $page);
+
+    $doctors = $this->doctorModel->getDoctorsPaginated(
+        $page,
+        $search,
+        $specialization
+    );
+    $specializations = $this->specializationModel->getAll();
+
+    $pageTitle = 'Doctors';
+
+    require __DIR__ . '/../views/partials/header.php';
+    require __DIR__ . '/../views/doctors/index.php';
+    require __DIR__ . '/../views/layouts/footer.php';
+}
 
     public function create(): void
     {

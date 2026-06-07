@@ -5,7 +5,7 @@ require_once __DIR__ . '/../core/CSRF.php';
 require_once __DIR__ . '/../core/helpers.php';
 require_once __DIR__ . '/../models/Prescription.php';
 require_once __DIR__ . '/../models/Appointment.php';
-
+require_once __DIR__ . '/../core/Paginator.php';
 class PrescriptionController
 {
     private Prescription $prescriptionModel;
@@ -141,16 +141,37 @@ class PrescriptionController
     public function index(): void
     {
         $user = Auth::currentUser();
-        if($user['role'] === 'admin') {
-            $prescriptions = $this->prescriptionModel->getAll();
-        }else if($user['role'] === 'doctor') {
-            $prescriptions = $this->prescriptionModel->getByDoctor($user['id']);
-        }
-        else{
-            $prescriptions = $this->prescriptionModel->getByPatient($user['id']);
-        }
+
+        $page = (int)($_GET['page_num'] ?? 1);
+
+        $filters = [
+            'doctor_name' => trim($_GET['doctor_name'] ?? ''),
+            'patient_name' => trim($_GET['patient_name'] ?? ''),
+            'date_from' => $_GET['date_from'] ?? '',
+            'date_to' => $_GET['date_to'] ?? '',
+        ];
+
+        $total = $this->prescriptionModel->countFiltered(
+            $user['role'],
+            $user['id'],
+            $filters
+        );
+
+        $prescriptions = $this->prescriptionModel->getFiltered(
+            $user['role'],
+            $user['id'],
+            $page,
+            $filters
+        );
+
+        $paginator = new Paginator(
+            $total,
+            ITEMS_PER_PAGE,
+            $page
+        );
 
         $pageTitle = 'My Prescriptions';
+
         require __DIR__ . '/../views/partials/header.php';
         require __DIR__ . '/../views/prescriptions/index.php';
         require __DIR__ . '/../views/layouts/footer.php';

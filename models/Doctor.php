@@ -4,7 +4,61 @@ require_once __DIR__ . '/BaseModel.php';
 
 class Doctor extends BaseModel
 {
+public function getDoctorsPaginated(int $page, string $search = '', string $specialization = ''): array
+{
+    $offset = max(0, ($page - 1) * ITEMS_PER_PAGE);
 
+    $sql = "
+        SELECT d.*, u.name as user_name, u.email, s.name as specialization
+        FROM doctors d
+        JOIN users u ON d.user_id = u.id
+        JOIN specializations s ON d.specialization_id = s.id
+        WHERE 1=1
+    ";
+
+    $params = [];
+
+    if ($search !== '') {
+        $sql .= " AND (u.name LIKE ? OR u.email LIKE ?)";
+        $params[] = "%$search%";
+        $params[] = "%$search%";
+    }
+
+    if ($specialization !== '') {
+        $sql .= " AND d.specialization_id = ?";
+        $params[] = $specialization;
+    }
+
+    $sql .= " ORDER BY u.name ASC LIMIT " . ITEMS_PER_PAGE . " OFFSET " . $offset;
+
+    return $this->fetchAll($sql, $params);
+}
+public function countDoctors(string $search = '', string $specialization = ''): int
+{
+    $sql = "
+        SELECT COUNT(*) as total
+        FROM doctors d
+        JOIN users u ON d.user_id = u.id
+        WHERE 1=1
+    ";
+
+    $params = [];
+
+    if ($search !== '') {
+        $sql .= " AND (u.name LIKE ? OR u.email LIKE ?)";
+        $params[] = "%$search%";
+        $params[] = "%$search%";
+    }
+
+    if ($specialization !== '') {
+        $sql .= " AND d.specialization_id = ?";
+        $params[] = $specialization;
+    }
+
+    $result = $this->fetchOne($sql, $params);
+
+    return $result ? (int)$result['total'] : 0;
+}
     public function findByUserId(int $userId): ?array
     {
         return $this->fetchOne(

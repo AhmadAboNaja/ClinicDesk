@@ -21,7 +21,7 @@
 <section class="content">
     <div class="container-fluid">
         <?php displayFlash(); ?>
-        
+
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -34,6 +34,41 @@
                         </div>
                     </div>
                     <div class="card-body">
+                        <form method="GET" class="mb-3">
+
+                            <input type="hidden" name="page" value="users">
+
+                            <input type="text" name="search" class="form-control mb-2"
+                                placeholder="Search name or email"
+                                value="<?php echo $_GET['search'] ?? ''; ?>">
+
+                            <div class="row">
+
+                                <div class="col-md-4">
+                                    <select name="role" class="form-control">
+                                        <option value="">All Roles</option>
+                                        <option value="admin" <?php if (($_GET['role'] ?? '') == 'admin') echo 'selected'; ?>>Admin</option>
+                                        <option value="doctor" <?php if (($_GET['role'] ?? '') == 'doctor') echo 'selected'; ?>>Doctor</option>
+                                        <option value="patient" <?php if (($_GET['role'] ?? '') == 'patient') echo 'selected'; ?>>Patient</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <select name="status" class="form-control">
+                                        <option value="">All Status</option>
+                                        <option value="1" <?php if (($_GET['status'] ?? '') == '1') echo 'selected'; ?>>Active</option>
+                                        <option value="0" <?php if (($_GET['status'] ?? '') == '0') echo 'selected'; ?>>Inactive</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <button class="btn btn-primary btn-block">
+                                        Search
+                                    </button>
+                                </div>
+
+                            </div>
+                        </form>
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover">
                                 <thead>
@@ -49,48 +84,48 @@
                                 <tbody>
                                     <?php if (!empty($users)): ?>
                                         <?php foreach ($users as $user): ?>
-                                        <tr>
-                                            <td><?php echo htmlspecialchars($user['name'], ENT_QUOTES, 'UTF-8'); ?></td>
-                                            <td><?php echo htmlspecialchars($user['email'], ENT_QUOTES, 'UTF-8'); ?></td>
-                                            <td>
-                                                <span class="badge badge-<?php echo $user['role'] === 'admin' ? 'danger' : ($user['role'] === 'doctor' ? 'success' : 'info'); ?>">
-                                                    <?php echo htmlspecialchars(ucfirst($user['role']), ENT_QUOTES, 'UTF-8'); ?>
-                                                </span>
-                                            </td>
-                                            <td><?php echo htmlspecialchars($user['phone'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></td>
-                                            <td>
-                                                <?php if ($user['is_active']): ?>
-                                                    <span class="badge badge-success">Active</span>
-                                                <?php else: ?>
-                                                    <span class="badge badge-danger">Inactive</span>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td>
-    <a href="index.php?page=users&action=edit&id=<?php echo $user['id']; ?>"
-       class="btn btn-sm btn-info">
-        <i class="fas fa-edit"></i> Edit
-    </a>
+                                            <tr>
+                                                <td><?php echo htmlspecialchars($user['name'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                                <td><?php echo htmlspecialchars($user['email'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                                <td>
+                                                    <span class="badge badge-<?php echo $user['role'] === 'admin' ? 'danger' : ($user['role'] === 'doctor' ? 'success' : 'info'); ?>">
+                                                        <?php echo htmlspecialchars(ucfirst($user['role']), ENT_QUOTES, 'UTF-8'); ?>
+                                                    </span>
+                                                </td>
+                                                <td><?php echo htmlspecialchars($user['phone'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></td>
+                                                <td>
+                                                    <?php if ($user['is_active']): ?>
+                                                        <span class="badge badge-success">Active</span>
+                                                    <?php else: ?>
+                                                        <span class="badge badge-danger">Inactive</span>
+                                                    <?php endif; ?>
+                                                </td>
+                                                <td>
+                                                    <a href="index.php?page=users&action=edit&id=<?php echo $user['id']; ?>"
+                                                        class="btn btn-sm btn-info">
+                                                        <i class="fas fa-edit"></i> Edit
+                                                    </a>
 
-    <form method="POST"
-          action="index.php?page=users&action=toggleActive&id=<?php echo $user['id']; ?>"
-          style="display:inline-block;"
-          onsubmit="return confirm('Change user status?');">
+                                                    <form method="POST"
+                                                        action="index.php?page=users&action=toggleActive&id=<?php echo $user['id']; ?>"
+                                                        style="display:inline-block;"
+                                                        onsubmit="return confirm('Change user status?');">
 
-        <?php echo CSRF::input(); ?>
+                                                        <?php echo CSRF::input(); ?>
 
-        <?php if ($user['is_active']): ?>
-            <button type="submit" class="btn btn-sm btn-warning">
-                <i class="fas fa-user-slash"></i> Deactivate
-            </button>
-        <?php else: ?>
-            <button type="submit" class="btn btn-sm btn-success">
-                <i class="fas fa-user-check"></i> Activate
-            </button>
-        <?php endif; ?>
+                                                        <?php if ($user['is_active']): ?>
+                                                            <button type="submit" class="btn btn-sm btn-warning">
+                                                                <i class="fas fa-user-slash"></i> Deactivate
+                                                            </button>
+                                                        <?php else: ?>
+                                                            <button type="submit" class="btn btn-sm btn-success">
+                                                                <i class="fas fa-user-check"></i> Activate
+                                                            </button>
+                                                        <?php endif; ?>
 
-    </form>
-</td>
-                                        </tr>
+                                                    </form>
+                                                </td>
+                                            </tr>
                                         <?php endforeach; ?>
                                     <?php else: ?>
                                         <tr>

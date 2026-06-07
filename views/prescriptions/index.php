@@ -21,7 +21,7 @@
 <section class="content">
     <div class="container-fluid">
         <?php displayFlash(); ?>
-        
+
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -29,6 +29,58 @@
                         <h3 class="card-title">Prescriptions List</h3>
                     </div>
                     <div class="card-body">
+                        <form method="GET" class="mb-3">
+                            <input type="hidden" name="page" value="prescriptions">
+
+                            <div class="row">
+
+                                <?php if (Auth::role() === 'admin'): ?>
+                                    <div class="col-md-3">
+                                        <label>Doctor</label>
+                                        <input type="text"
+                                            name="doctor_name"
+                                            class="form-control"
+                                            value="<?= htmlspecialchars($_GET['doctor_name'] ?? '') ?>">
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label>Patient</label>
+                                        <input type="text"
+                                            name="patient_name"
+                                            class="form-control"
+                                            value="<?= htmlspecialchars($_GET['patient_name'] ?? '') ?>">
+                                    </div>
+                                <?php endif; ?>
+
+                                <div class="col-md-2">
+                                    <label>From</label>
+                                    <input type="date"
+                                        name="date_from"
+                                        class="form-control"
+                                        value="<?= htmlspecialchars($_GET['date_from'] ?? '') ?>">
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label>To</label>
+                                    <input type="date"
+                                        name="date_to"
+                                        class="form-control"
+                                        value="<?= htmlspecialchars($_GET['date_to'] ?? '') ?>">
+                                </div>
+
+                                <div class="col-md-2 d-flex align-items-end">
+                                    <button class="btn btn-primary mr-2">
+                                        <i class="fas fa-search"></i> Filter
+                                    </button>
+
+                                    <a href="index.php?page=prescriptions"
+                                        class="btn btn-secondary">
+                                        Reset
+                                    </a>
+                                </div>
+
+                            </div>
+                        </form>
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover">
                                 <thead>
@@ -52,32 +104,32 @@
                                         </tr>
                                     <?php else: ?>
                                         <?php foreach ($prescriptions as $presc): ?>
-                                        <tr>
-                                            <td><?php echo htmlspecialchars($presc['doctor_name'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></td>
-                                            <td><?php echo htmlspecialchars($presc['patient_name'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></td>
-                                            <td><?php echo htmlspecialchars(formatDate($presc['appt_date']), ENT_QUOTES, 'UTF-8'); ?></td>
-                                            <td><?php echo htmlspecialchars(substr($presc['diagnosis'] ?? '', 0, 50), ENT_QUOTES, 'UTF-8'); ?><?php echo strlen($presc['diagnosis'] ?? '') > 50 ? '...' : ''; ?></td>
-                                            <td><?php echo htmlspecialchars(substr($presc['medications'] ?? '', 0, 50), ENT_QUOTES, 'UTF-8'); ?><?php echo strlen($presc['medications'] ?? '') > 50 ? '...' : ''; ?></td>
-                                            <td>
-                                                <?php if (!empty($presc['file_path'])): ?>
-                                                    <span class="badge badge-success"><i class="fas fa-file-pdf mr-1"></i> Available</span>
-                                                <?php else: ?>
-                                                    <span class="badge badge-secondary">No File</span>
-                                                <?php endif; ?>
-                                            </td>
-                                            <td>
-                                                <div class="btn-group">
-                                                    <a href="index.php?page=prescriptions&action=view&id=<?php echo $presc['id']; ?>" class="btn btn-sm btn-info" title="View">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
+                                            <tr>
+                                                <td><?php echo htmlspecialchars($presc['doctor_name'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></td>
+                                                <td><?php echo htmlspecialchars($presc['patient_name'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></td>
+                                                <td><?php echo htmlspecialchars(formatDate($presc['appt_date']), ENT_QUOTES, 'UTF-8'); ?></td>
+                                                <td><?php echo htmlspecialchars(substr($presc['diagnosis'] ?? '', 0, 50), ENT_QUOTES, 'UTF-8'); ?><?php echo strlen($presc['diagnosis'] ?? '') > 50 ? '...' : ''; ?></td>
+                                                <td><?php echo htmlspecialchars(substr($presc['medications'] ?? '', 0, 50), ENT_QUOTES, 'UTF-8'); ?><?php echo strlen($presc['medications'] ?? '') > 50 ? '...' : ''; ?></td>
+                                                <td>
                                                     <?php if (!empty($presc['file_path'])): ?>
-                                                    <a href="index.php?page=prescriptions&action=download&id=<?php echo $presc['id']; ?>" class="btn btn-sm btn-success" title="Download">
-                                                        <i class="fas fa-download"></i>
-                                                    </a>
+                                                        <span class="badge badge-success"><i class="fas fa-file-pdf mr-1"></i> Available</span>
+                                                    <?php else: ?>
+                                                        <span class="badge badge-secondary">No File</span>
                                                     <?php endif; ?>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group">
+                                                        <a href="index.php?page=prescriptions&action=view&id=<?php echo $presc['id']; ?>" class="btn btn-sm btn-info" title="View">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <?php if (!empty($presc['file_path'])): ?>
+                                                            <a href="index.php?page=prescriptions&action=download&id=<?php echo $presc['id']; ?>" class="btn btn-sm btn-success" title="Download">
+                                                                <i class="fas fa-download"></i>
+                                                            </a>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </td>
+                                            </tr>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                 </tbody>

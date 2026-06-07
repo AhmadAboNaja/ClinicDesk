@@ -4,6 +4,47 @@ require_once __DIR__ . '/BaseModel.php';
 
 class Specialization extends BaseModel
 {
+    public function getAllPaginated(int $page, string $search = ''): array
+    {
+        $offset = max(0, ($page - 1) * ITEMS_PER_PAGE);
+
+        $sql = "
+        SELECT 
+            s.*,
+            COUNT(d.user_id) AS doctor_count
+        FROM specializations s
+        LEFT JOIN doctors d ON d.specialization_id = s.id
+        WHERE 1=1
+    ";
+
+        $params = [];
+
+        if ($search !== '') {
+            $sql .= " AND s.name LIKE ?";
+            $params[] = "%$search%";
+        }
+
+        $sql .= "
+        GROUP BY s.id
+        ORDER BY s.name ASC
+        LIMIT " . ITEMS_PER_PAGE . " OFFSET " . $offset;
+
+        return $this->fetchAll($sql, $params);
+    }
+    public function countAll(string $search = ''): int
+    {
+        $sql = "SELECT COUNT(*) as total FROM specializations WHERE 1=1";
+        $params = [];
+
+        if ($search !== '') {
+            $sql .= " AND name LIKE ?";
+            $params[] = "%$search%";
+        }
+
+        $result = $this->fetchOne($sql, $params);
+
+        return $result ? (int)$result['total'] : 0;
+    }
     protected string $table = 'specializations';
     public function getAll(): array
     {

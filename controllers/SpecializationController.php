@@ -12,14 +12,22 @@ class SpecializationController {
     }
 
     public function index(): void {
-        Auth::requireRole('admin');
-        $specializations = $this->specializationModel->getAll();
+    Auth::requireRole('admin');
 
-        $pageTitle = 'Specializations';
-        require __DIR__ . '/../views/partials/header.php';
-        require __DIR__ . '/../views/doctors/specializations.php';
-        require __DIR__ . '/../views/layouts/footer.php';
-    }
+    $page = (int) ($_GET['page_num'] ?? 1);
+    $search = trim($_GET['search'] ?? '');
+
+    $total = $this->specializationModel->countAll($search);
+
+    $paginator = new Paginator($total, ITEMS_PER_PAGE, $page);
+
+    $specializations = $this->specializationModel->getAllPaginated($page, $search);
+
+    $pageTitle = 'Specializations';
+    require __DIR__ . '/../views/partials/header.php';
+    require __DIR__ . '/../views/doctors/specializations.php';
+    require __DIR__ . '/../views/layouts/footer.php';
+}
 
     public function create(): void {
         Auth::requireRole('admin');

@@ -21,7 +21,7 @@
 <section class="content">
     <div class="container-fluid">
         <?php displayFlash(); ?>
-        
+
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -29,13 +29,96 @@
                         <h3 class="card-title">Appointments List</h3>
                         <div class="card-tools">
                             <?php if (Auth::role() === 'patient'): ?>
-                            <a href="index.php?page=appointments&action=book" class="btn btn-primary btn-sm">
-                                <i class="fas fa-plus mr-1"></i> Book Appointment
-                            </a>
+                                <a href="index.php?page=appointments&action=book" class="btn btn-primary btn-sm">
+                                    <i class="fas fa-plus mr-1"></i> Book Appointment
+                                </a>
                             <?php endif; ?>
                         </div>
                     </div>
                     <div class="card-body">
+                        <!-- Filters -->
+                        <form method="GET" class="mb-3">
+                            <input type="hidden" name="page" value="appointments">
+
+                            <div class="row">
+
+                                <?php if (Auth::role() === 'admin'): ?>
+                                    <div class="col-md-3">
+                                        <label>Doctor</label>
+                                        <select name="doctor_id" class="form-control">
+                                            <option value="">All Doctors</option>
+
+                                            <?php foreach ($doctors as $doctor): ?>
+                                                <option
+                                                    value="<?= $doctor['id'] ?>"
+                                                    <?= ($_GET['doctor_id'] ?? '') == $doctor['id'] ? 'selected' : '' ?>>
+                                                    <?= htmlspecialchars($doctor['name']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label>Patient Name</label>
+                                        <input
+                                            type="text"
+                                            name="patient_name"
+                                            class="form-control"
+                                            value="<?= htmlspecialchars($_GET['patient_name'] ?? '') ?>"
+                                            placeholder="Search patient">
+                                    </div>
+                                <?php endif; ?>
+
+                                <div class="col-md-2">
+                                    <label>Status</label>
+                                    <select name="status" class="form-control">
+                                        <option value="">All</option>
+
+                                        <?php
+                                        $statuses = ['pending', 'confirmed', 'completed', 'cancelled'];
+                                        foreach ($statuses as $status):
+                                        ?>
+                                            <option
+                                                value="<?= $status ?>"
+                                                <?= ($_GET['status'] ?? '') === $status ? 'selected' : '' ?>>
+                                                <?= ucfirst($status) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label>From</label>
+                                    <input
+                                        type="date"
+                                        name="date_from"
+                                        class="form-control"
+                                        value="<?= htmlspecialchars($_GET['date_from'] ?? '') ?>">
+                                </div>
+
+                                <div class="col-md-2">
+                                    <label>To</label>
+                                    <input
+                                        type="date"
+                                        name="date_to"
+                                        class="form-control"
+                                        value="<?= htmlspecialchars($_GET['date_to'] ?? '') ?>">
+                                </div>
+
+                            </div>
+
+                            <div class="mt-3">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Filter
+                                </button>
+
+                                <a href="index.php?page=appointments"
+                                    class="btn btn-secondary">
+                                    <i class="fas fa-redo"></i> Reset
+                                </a>
+                            </div>
+                        </form>
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover">
                                 <thead>
@@ -64,62 +147,62 @@
                                         </tr>
                                     <?php else: ?>
                                         <?php foreach ($appointments as $appt): ?>
-                                        <tr>
-                                            <?php if (Auth::role() === 'admin' || Auth::role() === 'patient'): ?>
-                                                <td><?php echo htmlspecialchars($appt['doctor_name'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></td>
-                                                <td><?php echo htmlspecialchars($appt['specialization'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></td>
-                                            <?php endif; ?>
-                                            <?php if (Auth::role() === 'admin' || Auth::role() === 'doctor'): ?>
-                                                <td><?php echo htmlspecialchars($appt['patient_name'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></td>
-                                            <?php endif; ?>
-                                            <td><?php echo htmlspecialchars(formatDate($appt['appt_date']), ENT_QUOTES, 'UTF-8'); ?></td>
-                                            <td><?php echo htmlspecialchars(formatTime($appt['appt_time']), ENT_QUOTES, 'UTF-8'); ?></td>
-                                            <td><?php echo htmlspecialchars($appt['reason'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></td>
-                                            <td>
-                                                <?php
-                                                $statusClass = match($appt['status']) {
-                                                    'pending' => 'warning',
-                                                    'confirmed' => 'info',
-                                                    'completed' => 'success',
-                                                    'cancelled' => 'danger',
-                                                    default => 'secondary'
-                                                };
-                                                ?>
-                                                <span class="badge badge-<?php echo $statusClass; ?>">
-                                                    <?php echo htmlspecialchars(ucfirst($appt['status']), ENT_QUOTES, 'UTF-8'); ?>
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <div class="btn-group">
-                                                    <a href="index.php?page=appointments&action=view&id=<?php echo $appt['id']; ?>" class="btn btn-sm btn-info" title="View">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
-                                                    <?php if (Auth::role() === 'patient' && $appt['status'] === 'pending'): ?>
-                                                    -<form method="POST" action="index.php?page=appointments&action=cancel&id=<?php echo $appt['id']; ?>" style="display:inline;">
-                                                        <?php echo CSRF::input(); ?>
-                                                        <button type="submit" class="btn btn-sm btn-danger" title="Cancel" onclick="return confirm('Are you sure you want to cancel this appointment?');">
-                                                            <i class="fas fa-times"></i>
-                                                        </button>
-                                                    </form>
-                                                    <?php endif; ?>
-                                                    <?php if ((Auth::role() === 'doctor' || Auth::role() === 'admin') && $appt['status'] === 'pending'): ?>
-                                                    <form method="POST" action="index.php?page=appointments&action=updateStatus&id=<?php echo $appt['id']; ?>" style="display:inline;">
-                                                        <?php echo CSRF::input(); ?>
-                                                        <input type="hidden" name="id" value="<?php echo $appt['id']; ?>">
-                                                        <input type="hidden" name="status" value="confirmed">
-                                                        <button type="submit" class="btn btn-sm btn-success" title="Confirm">
-                                                            <i class="fas fa-check"></i>
-                                                        </button>
-                                                    </form>
-                                                    <?php endif; ?>
-                                                    <?php if ((Auth::role() === 'doctor') && in_array($appt['status'], ['confirmed', 'pending'])): ?>
-                                                   - <a href="index.php?page=prescriptions&action=add&appointment_id=<?php echo $appt['id']; ?>" class="btn btn-sm btn-warning" title="Add Prescription">
-                                                        <i class="fas fa-prescription"></i>
-                                                    </a>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                            <tr>
+                                                <?php if (Auth::role() === 'admin' || Auth::role() === 'patient'): ?>
+                                                    <td><?php echo htmlspecialchars($appt['doctor_name'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></td>
+                                                    <td><?php echo htmlspecialchars($appt['specialization'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></td>
+                                                <?php endif; ?>
+                                                <?php if (Auth::role() === 'admin' || Auth::role() === 'doctor'): ?>
+                                                    <td><?php echo htmlspecialchars($appt['patient_name'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></td>
+                                                <?php endif; ?>
+                                                <td><?php echo htmlspecialchars(formatDate($appt['appt_date']), ENT_QUOTES, 'UTF-8'); ?></td>
+                                                <td><?php echo htmlspecialchars(formatTime($appt['appt_time']), ENT_QUOTES, 'UTF-8'); ?></td>
+                                                <td><?php echo htmlspecialchars($appt['reason'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></td>
+                                                <td>
+                                                    <?php
+                                                    $statusClass = match ($appt['status']) {
+                                                        'pending' => 'warning',
+                                                        'confirmed' => 'info',
+                                                        'completed' => 'success',
+                                                        'cancelled' => 'danger',
+                                                        default => 'secondary'
+                                                    };
+                                                    ?>
+                                                    <span class="badge badge-<?php echo $statusClass; ?>">
+                                                        <?php echo htmlspecialchars(ucfirst($appt['status']), ENT_QUOTES, 'UTF-8'); ?>
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group">
+                                                        <a href="index.php?page=appointments&action=view&id=<?php echo $appt['id']; ?>" class="btn btn-sm btn-info" title="View">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <?php if (Auth::role() === 'patient' && $appt['status'] === 'pending'): ?>
+                                                            -<form method="POST" action="index.php?page=appointments&action=cancel&id=<?php echo $appt['id']; ?>" style="display:inline;">
+                                                                <?php echo CSRF::input(); ?>
+                                                                <button type="submit" class="btn btn-sm btn-danger" title="Cancel" onclick="return confirm('Are you sure you want to cancel this appointment?');">
+                                                                    <i class="fas fa-times"></i>
+                                                                </button>
+                                                            </form>
+                                                        <?php endif; ?>
+                                                        <?php if ((Auth::role() === 'doctor' || Auth::role() === 'admin') && $appt['status'] === 'pending'): ?>
+                                                            <form method="POST" action="index.php?page=appointments&action=updateStatus&id=<?php echo $appt['id']; ?>" style="display:inline;">
+                                                                <?php echo CSRF::input(); ?>
+                                                                <input type="hidden" name="id" value="<?php echo $appt['id']; ?>">
+                                                                <input type="hidden" name="status" value="confirmed">
+                                                                <button type="submit" class="btn btn-sm btn-success" title="Confirm">
+                                                                    <i class="fas fa-check"></i>
+                                                                </button>
+                                                            </form>
+                                                        <?php endif; ?>
+                                                        <?php if ((Auth::role() === 'doctor') && in_array($appt['status'], ['confirmed', 'pending'])): ?>
+                                                            - <a href="index.php?page=prescriptions&action=add&appointment_id=<?php echo $appt['id']; ?>" class="btn btn-sm btn-warning" title="Add Prescription">
+                                                                <i class="fas fa-prescription"></i>
+                                                            </a>
+                                                        <?php endif; ?>
+                                                    </div>
+                                                </td>
+                                            </tr>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                 </tbody>

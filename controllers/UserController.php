@@ -18,13 +18,22 @@ class UserController
     public function index(): void
     {
         Auth::requireRole('admin');
+
         $page = (int) ($_GET['page_num'] ?? 1);
         $role = $_GET['role'] ?? '';
         $search = $_GET['search'] ?? '';
+        $status = $_GET['status'] ?? '';
 
-        $total = $this->userModel->countAll($role);
+        $total = $this->userModel->countUsers($role, $search, $status);
+
         $paginator = new Paginator($total, ITEMS_PER_PAGE, $page);
-        $users = $this->userModel->getAllPaginated($page, $role);
+
+        $users = $this->userModel->getUsersPaginated(
+            $page,
+            $role,
+            $search,
+            $status
+        );
 
         $pageTitle = 'User Management';
         require __DIR__ . '/../views/partials/header.php';
