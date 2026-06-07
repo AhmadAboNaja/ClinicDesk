@@ -3,4 +3,3 @@ public/uploads/*
 !public/uploads/.gitkeep
 vendor/
 .env
-ClinicDesk_FinalProject.pdf
