@@ -2,6 +2,8 @@
 
 <!-- Content Header (Page header) -->
 <div class="content-header">
+
+
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
@@ -27,11 +29,17 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">
+                        <?php
+                        $editedDoctor = $editedDoctor ?? [];
+                        $specializations = $specializations ?? [];
+                        ?>
                         <h3 class="card-title">Edit Doctor: <?php echo htmlspecialchars($editedDoctor['user_name'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></h3>
                     </div>
-                    <form method="POST" action="index.php?page=doctors&action=edit&id=<?= $editedDoctor['user_id']; ?>">
+
+                    <form method="POST" action="index.php?page=doctors&action=edit&id=<?= $editedDoctor['user_id']; ?>" enctype="multipart/form-data">
                         <div class="card-body">
                             <?php echo CSRF::input(); ?>
+
                             <div class="form-group">
                                 <label for="specialization_id">Specialization <span class="text-danger">*</span></label>
                                 <select class="form-control" id="specialization_id" name="specialization_id" required>
@@ -70,10 +78,25 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                <label for="profile_photo">Profile Photo (JPEG/PNG, max 1MB)</label>
+                                <input type="file" class="form-control" id="profile_photo" name="profile_photo" accept="image/png,image/jpeg">
+
+                                <?php if (!empty($editedDoctor['profile_photo'])): ?>
+                                    <div class="mt-2">
+                                        <img
+src="<?= htmlspecialchars(	trim('/ClinicDesk/public/uploads/doctor_photos/' . ($editedDoctor['profile_photo'] ?? '')), ENT_QUOTES, 'UTF-8'); ?>"
+                                            alt="Doctor photo"
+                                            style="width: 120px; height: 120px; object-fit: cover; border-radius: 6px;">
+                                    </div>
+                                <?php endif; ?>
+                                <small class="form-text text-muted">Optional. Leave empty to keep the current photo.</small>
+                            </div>
+                            <div class="form-group">
                                 <label for="bio">Biography</label>
                                 <textarea class="form-control" id="bio" name="bio" rows="4" placeholder="Enter doctor biography..."><?php echo htmlspecialchars($editedDoctor['bio'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
                             </div>
                         </div>
+
                         <div class="card-footer">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save mr-1"></i> Save Changes

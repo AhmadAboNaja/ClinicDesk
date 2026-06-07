@@ -72,7 +72,9 @@
                             <table class="table table-bordered table-hover">
                                 <thead>
                                     <tr>
+                                        <th>Photo</th>
                                         <th>Name</th>
+
                                         <th>Specialization</th>
                                         <th>Consultation Fee</th>
                                         <th>Available Days</th>
@@ -82,8 +84,17 @@
                                 <tbody>
                                     <?php if (!empty($doctors)): ?>
                                         <?php foreach ($doctors as $doc): ?>
+
                                             <tr>
+                                                <td style="width:90px;">
+                                                    <?php if (!empty($doc['profile_photo'])): ?>
+                                                        <img src="/ClinicDesk/public/uploads/doctor_photos/<?= htmlspecialchars($doc['profile_photo'], ENT_QUOTES, 'UTF-8'); ?>" alt="Doctor photo" style="width:50px;height:50px;object-fit:cover;border-radius:6px;">
+                                                    <?php else: ?>
+                                                        <i class="fas fa-user-md text-info"></i>
+                                                    <?php endif; ?>
+                                                </td>
                                                 <td>
+
                                                     <div class="d-flex align-items-center">
                                                         <div class="user-img mr-2">
                                                             <i class="fas fa-user-md fa-2x text-info"></i>

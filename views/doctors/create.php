@@ -2,6 +2,7 @@
 
 <!-- Content Header (Page header) -->
 <div class="content-header">
+
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
@@ -29,16 +30,24 @@
                     <div class="card-header">
                         <h3 class="card-title">New Doctor Information</h3>
                     </div>
-                    <form method="POST" action="index.php?page=doctors&action=create">
+                    <form method="POST" action="index.php?page=doctors&action=create" enctype="multipart/form-data">
                         <div class="card-body">
                             <?php echo CSRF::input(); ?>
+
+                            <?php
+                            $doctorUsers = $doctorUsers ?? [];
+                            $specializations = $specializations ?? [];
+                            ?>
+
                             <div class="form-group">
+
                                 <label for="user_id">Doctor User <span class="text-danger">*</span></label>
 
                                 <select class="form-control" name="user_id" required>
                                     <option value="">-- Select Doctor --</option>
 
-                                    <?php foreach ($doctorUsers as $u): ?>
+                                    <?php foreach ($doctorUsers ?? [] as $u): ?>
+
                                         <option value="<?= $u['id'] ?>">
                                             <?= htmlspecialchars($u['name']) ?> (<?= htmlspecialchars($u['email']) ?>)
                                         </option>
@@ -54,9 +63,10 @@
                                 <label for="specialization_id">Specialization <span class="text-danger">*</span></label>
                                 <select class="form-control" id="specialization_id" name="specialization_id" required>
                                     <option value="">-- Select Specialization --</option>
-                                    <?php foreach ($specializations as $spec): ?>
+                                    <?php foreach ($specializations ?? [] as $spec): ?>
                                         <option value="<?php echo $spec['id']; ?>"><?php echo htmlspecialchars($spec['name'], ENT_QUOTES, 'UTF-8'); ?></option>
                                     <?php endforeach; ?>
+
                                 </select>
                             </div>
                             <div class="form-group">
@@ -82,9 +92,15 @@
                                 </div>
                             </div>
                             <div class="form-group">
+                                <label for="profile_photo">Profile Photo (JPEG/PNG, max 1MB)</label>
+                                <input type="file" class="form-control" id="profile_photo" name="profile_photo" accept="image/png,image/jpeg">
+                                <small class="form-text text-muted">Optional. If provided, only JPEG/PNG files up to 1MB are allowed.</small>
+                            </div>
+                            <div class="form-group">
                                 <label for="bio">Biography</label>
                                 <textarea class="form-control" id="bio" name="bio" rows="4" placeholder="Enter doctor biography..."></textarea>
                             </div>
+
                         </div>
                         <div class="card-footer">
                             <button type="submit" class="btn btn-primary">
