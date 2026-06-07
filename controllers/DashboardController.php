@@ -37,9 +37,9 @@ class DashboardController {
 
         if ($role === 'doctor') {
             $doctor = $this->doctorModel->findByUserId($user['id']);
-            $todayAppointments = $this->appointmentModel->getDoctorAppointmentsByDate($doctor['id'], date('Y-m-d'));
-            $counts = $this->appointmentModel->countDoctorAppointmentsSummary($doctor['id']);
-            $upcoming = $this->appointmentModel->getDoctorUpcomingAppointments($doctor['id'], 5);
+            $todayAppointments = $this->appointmentModel->getDoctorAppointmentsByDate($doctor['user_id'], date('Y-m-d'));
+            $counts = $this->appointmentModel->countDoctorAppointmentsSummary($doctor['user_id']);
+            $upcoming = $this->appointmentModel->getDoctorUpcomingAppointments($doctor['user_id'], 5);
             require_once __DIR__ . '/../views/dashboard/doctor.php';
             return;
         }

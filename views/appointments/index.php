@@ -103,7 +103,7 @@
                                                     </form>
                                                     <?php endif; ?>
                                                     <?php if ((Auth::role() === 'doctor' || Auth::role() === 'admin') && $appt['status'] === 'pending'): ?>
-                                                    <form method="POST" action="index.php?page=appointments&action=updateStatus" style="display:inline;">
+                                                    <form method="POST" action="index.php?page=appointments&action=updateStatus&id=<?php echo $appt['id']; ?>" style="display:inline;">
                                                         <?php echo CSRF::input(); ?>
                                                         <input type="hidden" name="id" value="<?php echo $appt['id']; ?>">
                                                         <input type="hidden" name="status" value="confirmed">
@@ -112,7 +112,7 @@
                                                         </button>
                                                     </form>
                                                     <?php endif; ?>
-                                                    <?php if ((Auth::role() === 'doctor' || Auth::role() === 'admin') && in_array($appt['status'], ['confirmed', 'pending'])): ?>
+                                                    <?php if ((Auth::role() === 'doctor') && in_array($appt['status'], ['confirmed', 'pending'])): ?>
                                                    - <a href="index.php?page=prescriptions&action=add&appointment_id=<?php echo $appt['id']; ?>" class="btn btn-sm btn-warning" title="Add Prescription">
                                                         <i class="fas fa-prescription"></i>
                                                     </a>

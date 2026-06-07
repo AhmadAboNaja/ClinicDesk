@@ -17,7 +17,25 @@ class AppointmentController
         $this->appointmentModel = new Appointment();
         $this->doctorModel = new Doctor();
     }
+public function view(): void
+{
+    Auth::requireRole('admin', 'doctor', 'patient');
 
+    $id = (int) ($_GET['id'] ?? 0);
+
+    $appointment = $this->appointmentModel->findById($id);
+
+    if (!$appointment) {
+        flash('error', 'Appointment not found.');
+        redirect('index.php?page=appointments');
+    }
+
+    $pageTitle = 'Appointment Details';
+
+    require __DIR__ . '/../views/partials/header.php';
+    require __DIR__ . '/../views/appointments/view.php';
+    require __DIR__ . '/../views/layouts/footer.php';
+}
     public function book(): void
     {
         Auth::requireRole('patient');
@@ -89,8 +107,8 @@ class AppointmentController
             $appointments = $this->appointmentModel->getByPatient($user['id'], $page, $filters);
         } elseif ($role === 'doctor') {
             $doctor = $this->doctorModel->findByUserId($user['id']);
-            $total = $this->appointmentModel->countFiltered('doctor', $doctor['id'] ?? 0, $filters);
-            $appointments = $this->appointmentModel->getByDoctor($doctor['id'] ?? 0, $page, $filters);
+            $total = $this->appointmentModel->countFiltered('doctor', $doctor['user_id'] ?? 0, $filters);
+            $appointments = $this->appointmentModel->getByDoctor($doctor['user_id'] ?? 0, $page, $filters);
         } else {
             $filters['doctor_id'] = $_GET['doctor_id'] ?? '';
             $filters['patient_name'] = $_GET['patient_name'] ?? '';

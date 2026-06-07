@@ -31,7 +31,7 @@
                         </h3>
                         <div class="card-tools">
                             <span class="badge badge-light">
-                                <?php echo htmlspecialchars(formatDate($prescription['appt_date'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
+                                <?php echo htmlspecialchars(formatDate($appointment['appt_date'] ?? ''), ENT_QUOTES, 'UTF-8'); ?>
                             </span>
                         </div>
                     </div>
@@ -44,7 +44,7 @@
                                         <span class="info-box-icon bg-info"><i class="fas fa-user"></i></span>
                                         <div class="info-box-content">
                                             <span class="info-box-text">Patient</span>
-                                            <span class="info-box-number"><?php echo htmlspecialchars($prescription['patient_name'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></span>
+                                            <span class="info-box-number"><?php echo htmlspecialchars($appointment['patient_name'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></span>
                                         </div>
                                     </div>
                                 </div>
@@ -55,7 +55,7 @@
                                         <span class="info-box-icon bg-success"><i class="fas fa-user-md"></i></span>
                                         <div class="info-box-content">
                                             <span class="info-box-text">Doctor</span>
-                                            <span class="info-box-number"><?php echo htmlspecialchars($prescription['doctor_name'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></span>
+                                            <span class="info-box-number"><?php echo htmlspecialchars($appointment['doctor_name'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></span>
                                         </div>
                                     </div>
                                 </div>

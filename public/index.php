@@ -135,6 +135,8 @@ switch ($page) {
                 header('Location: index.php?page=appointments');
                 exit;
             }
+        } elseif ($action === 'view') {
+            $controller->view();
         } else {
             $controller->index();
             $page_num = $_GET['page_num'] ?? 1;
@@ -148,32 +150,14 @@ switch ($page) {
         require_once __DIR__ . '/../controllers/PrescriptionController.php';
         $controller = new PrescriptionController();
         if ($action === 'add') {
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                Auth::requireRole('doctor', 'admin');
-                $controller->add();
-            } else {
-                Auth::requireRole('doctor', 'admin');
-                $_GET['appointment_id'] = $_GET['appointment_id'] ?? null;
-                $pageTitle = 'Add Prescription';
-                require_once __DIR__ . '/../views/prescriptions/add.php';
-            }
+            Auth::requireRole('doctor', 'admin');
+            $controller->add();
         } elseif ($action === 'view') {
-            $prescriptionId = $_GET['id'] ?? null;
-            if (!$prescriptionId) {
-                header('Location: index.php?page=prescriptions');
-                exit;
-            }
-            $pageTitle = 'Prescription Detail';
-            require_once __DIR__ . '/../views/prescriptions/view.php';
+            $controller->view();
         } elseif ($action === 'download') {
-            $prescriptionId = $_GET['id'] ?? null;
-            if ($prescriptionId) {
-                $controller->download($prescriptionId);
-            } else {
-                header('Location: index.php?page=prescriptions');
-                exit;
-            }
+            $controller->download();
         } else {
+            $controller->index();
             $page_num = $_GET['page_num'] ?? 1;
             $pageTitle = 'Prescriptions';
             require_once __DIR__ . '/../views/prescriptions/index.php';

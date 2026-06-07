@@ -3,6 +3,26 @@
 require_once __DIR__ . '/BaseModel.php';
 
 class Prescription extends BaseModel {
+    public function getAll(): array {
+        $sql = 'SELECT p.*, a.appt_date, d.name as doctor_name, u.name as patient_name
+                FROM prescriptions p
+                JOIN appointments a ON p.appointment_id = a.id
+                JOIN doctors doc ON a.doctor_id = doc.user_id
+                JOIN users d ON doc.user_id = d.id
+                JOIN users u ON a.patient_id = u.id
+                ORDER BY a.appt_date DESC';
+        return $this->fetchAll($sql);
+    }   
+    public function getByDoctor(int $doctorId): array {
+        $sql = 'SELECT p.*, a.appt_date, u.name as patient_name, d.name as doctor_name
+                FROM prescriptions p
+                JOIN appointments a ON p.appointment_id = a.id
+                JOIN users u ON a.patient_id = u.id
+                JOIN users d ON a.doctor_id = d.id
+                WHERE a.doctor_id = ? AND a.status = "completed"
+                ORDER BY a.appt_date DESC';
+        return $this->fetchAll($sql, [$doctorId]);
+    }
     public function findById(int $id): ?array {
         return $this->fetchOne('SELECT * FROM prescriptions WHERE id = ?', [$id]);
     }

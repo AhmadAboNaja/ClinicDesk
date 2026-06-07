@@ -6,22 +6,26 @@ require_once __DIR__ . '/../core/helpers.php';
 require_once __DIR__ . '/../models/Prescription.php';
 require_once __DIR__ . '/../models/Appointment.php';
 
-class PrescriptionController {
+class PrescriptionController
+{
     private Prescription $prescriptionModel;
     private Appointment $appointmentModel;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->prescriptionModel = new Prescription();
         $this->appointmentModel = new Appointment();
     }
 
-    public function add(): void {
+    public function add(): void
+    {
         Auth::requireRole('doctor');
-        $appointmentId = (int) ($_GET['id'] ?? 0);
+        $appointmentId = (int) ($_GET['appointment_id'] ?? 0);
         $user = Auth::currentUser();
 
         $appointment = $this->appointmentModel->findById($appointmentId);
-        if (!$appointment || (int) $appointment['doctor_id'] !== (int) $appointmentId) {
+
+        if (!$appointment || (int) $appointment['doctor_id'] !== (int) $user['id']) {
             flash('error', 'Appointment not found.');
             redirect('index.php?page=appointments');
         }
@@ -57,6 +61,7 @@ class PrescriptionController {
             ];
 
             $this->prescriptionModel->create($data);
+            $this->appointmentModel->updateStatus($appointmentId, "completed");
             flash('success', 'Prescription created.');
             redirect('index.php?page=appointments');
         }
@@ -67,7 +72,8 @@ class PrescriptionController {
         require __DIR__ . '/../views/layouts/footer.php';
     }
 
-    public function view(): void {
+    public function view(): void
+    {
         Auth::requireRole('patient', 'doctor', 'admin');
         $prescriptionId = (int) ($_GET['id'] ?? 0);
         $prescription = $this->prescriptionModel->findById($prescriptionId);
@@ -96,7 +102,8 @@ class PrescriptionController {
         require __DIR__ . '/../views/layouts/footer.php';
     }
 
-    public function download(): void {
+    public function download(): void
+    {
         Auth::requireRole('patient', 'doctor', 'admin');
         $prescriptionId = (int) ($_GET['id'] ?? 0);
         $prescription = $this->prescriptionModel->findById($prescriptionId);
@@ -131,10 +138,17 @@ class PrescriptionController {
         exit;
     }
 
-    public function index(): void {
-        Auth::requireRole('patient');
+    public function index(): void
+    {
         $user = Auth::currentUser();
-        $prescriptions = $this->prescriptionModel->getByPatient($user['id']);
+        if($user['role'] === 'admin') {
+            $prescriptions = $this->prescriptionModel->getAll();
+        }else if($user['role'] === 'doctor') {
+            $prescriptions = $this->prescriptionModel->getByDoctor($user['id']);
+        }
+        else{
+            $prescriptions = $this->prescriptionModel->getByPatient($user['id']);
+        }
 
         $pageTitle = 'My Prescriptions';
         require __DIR__ . '/../views/partials/header.php';
@@ -142,7 +156,8 @@ class PrescriptionController {
         require __DIR__ . '/../views/layouts/footer.php';
     }
 
-    private function uploadPrescriptionFile(array $file): ?string {
+    private function uploadPrescriptionFile(array $file): ?string
+    {
         $maxSize = UPLOAD_MAX_PRESCRIPTION;
         if ($file['size'] > $maxSize) {
             return null;

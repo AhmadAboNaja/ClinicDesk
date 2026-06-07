@@ -34,6 +34,7 @@
                                 <thead>
                                     <tr>
                                         <th>Doctor</th>
+                                        <th>Patient</th>
                                         <th>Date</th>
                                         <th>Diagnosis</th>
                                         <th>Medications</th>
@@ -53,6 +54,7 @@
                                         <?php foreach ($prescriptions as $presc): ?>
                                         <tr>
                                             <td><?php echo htmlspecialchars($presc['doctor_name'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></td>
+                                            <td><?php echo htmlspecialchars($presc['patient_name'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?></td>
                                             <td><?php echo htmlspecialchars(formatDate($presc['appt_date']), ENT_QUOTES, 'UTF-8'); ?></td>
                                             <td><?php echo htmlspecialchars(substr($presc['diagnosis'] ?? '', 0, 50), ENT_QUOTES, 'UTF-8'); ?><?php echo strlen($presc['diagnosis'] ?? '') > 50 ? '...' : ''; ?></td>
                                             <td><?php echo htmlspecialchars(substr($presc['medications'] ?? '', 0, 50), ENT_QUOTES, 'UTF-8'); ?><?php echo strlen($presc['medications'] ?? '') > 50 ? '...' : ''; ?></td>
