@@ -55,6 +55,14 @@ switch ($page) {
         $controller->index();
         break;
 
+    case 'profile':
+        Auth::requireRole('admin', 'doctor', 'patient');
+        require_once __DIR__ . '/../controllers/ProfileController.php';
+        $controller = new ProfileController();
+        $controller->index();
+        break;
+
+
     case 'users':
         Auth::requireRole('admin');
         require_once __DIR__ . '/../controllers/UserController.php';
