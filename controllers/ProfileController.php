@@ -61,10 +61,28 @@ class ProfileController
                 redirect('index.php?page=profile');
             }
 
-            if (strlen($newPassword) < 6) {
-                flash('error', 'New password must be at least 6 characters.');
+            $newPassword = (string)$newPassword;
+            $hasLower = (bool)preg_match('/[a-z]/', $newPassword);
+            $hasUpper = (bool)preg_match('/[A-Z]/', $newPassword);
+            $hasNumber = (bool)preg_match('/[0-9]/', $newPassword);
+            $hasSpecial = (bool)preg_match('/[^A-Za-z0-9]/', $newPassword);
+            $hasWhitespace = (bool)preg_match('/\s/', $newPassword);
+
+            if (strlen($newPassword) < 12) {
+                flash('error', 'New password must be at least 12 characters long.');
                 redirect('index.php?page=profile');
             }
+
+            if (!$hasLower || !$hasUpper || !$hasNumber || !$hasSpecial) {
+                flash('error', 'New password must include: lowercase, uppercase, number, and special character.');
+                redirect('index.php?page=profile');
+            }
+
+            if ($hasWhitespace) {
+                flash('error', 'New password must not contain spaces or whitespace characters.');
+                redirect('index.php?page=profile');
+            }
+
 
             $this->userModel->update((int)$user['id'], [
                 'name' => $name,
