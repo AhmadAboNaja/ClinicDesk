@@ -62,6 +62,14 @@ switch ($page) {
         $controller->index();
         break;
 
+    case 'change_password':
+        Auth::requireRole('admin', 'doctor', 'patient');
+        require_once __DIR__ . '/../controllers/ChangePasswordController.php';
+        $controller = new ChangePasswordController();
+        $controller->index();
+        break;
+
+
 
     case 'users':
         Auth::requireRole('admin');
